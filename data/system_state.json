@@ -1,0 +1,553 @@
+{
+  "settings": {
+    "night_curfew_start": "22:00",
+    "night_curfew_end": "06:00",
+    "so2_threshold_ugm3": 80.0,
+    "h2s_threshold_ugm3": 15.0,
+    "fine_multiplier_night": 1.5,
+    "statutory_base_fine_inr": 500000,
+    "auto_flag_exceedance": true
+  },
+  "broadcast_message": {
+    "active": true,
+    "title": "TNPCB AIR SURVEILLANCE DIRECTIVE",
+    "message": "Nocturnal CEMS cross-validation active under Section 21 Air Act. Continuous stack telemetry required between 22:00 - 06:00 IST.",
+    "severity": "warning",
+    "updated_at": "2026-09-18T18:00:00Z",
+    "updated_by": "Dr. Aris Thorne (super_admin)"
+  },
+  "audit_log": [
+    {
+      "id": "AUD-1053",
+      "timestamp": "2026-09-18T20:17:43Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1052",
+      "timestamp": "2026-09-18T20:17:21Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1051",
+      "timestamp": "2026-09-18T20:15:32Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1050",
+      "timestamp": "2026-09-18T20:14:02Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGOUT",
+      "details": "User K. Ramanathan logged out."
+    },
+    {
+      "id": "AUD-1049",
+      "timestamp": "2026-09-18T20:13:41Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User K. Ramanathan (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1048",
+      "timestamp": "2026-09-18T20:13:39Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGOUT",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) logged out."
+    },
+    {
+      "id": "AUD-1047",
+      "timestamp": "2026-09-18T20:12:46Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGIN",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) (citizen) logged in successfully."
+    },
+    {
+      "id": "AUD-1046",
+      "timestamp": "2026-09-18T20:12:43Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGOUT",
+      "details": "User P. Soundararajan (TNPCB District Officer) logged out."
+    },
+    {
+      "id": "AUD-1045",
+      "timestamp": "2026-09-18T20:12:12Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1044",
+      "timestamp": "2026-09-18T20:12:10Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1043",
+      "timestamp": "2026-09-18T20:10:47Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1042",
+      "timestamp": "2026-09-18T20:10:40Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1041",
+      "timestamp": "2026-09-18T20:10:36Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1040",
+      "timestamp": "2026-09-18T20:02:22Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1039",
+      "timestamp": "2026-09-18T20:00:03Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGIN",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) (citizen) logged in successfully."
+    },
+    {
+      "id": "AUD-1038",
+      "timestamp": "2026-09-18T20:00:01Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGOUT",
+      "details": "User P. Soundararajan (TNPCB District Officer) logged out."
+    },
+    {
+      "id": "AUD-1037",
+      "timestamp": "2026-09-18T19:59:33Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1036",
+      "timestamp": "2026-09-18T19:59:30Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGOUT",
+      "details": "User K. Ramanathan logged out."
+    },
+    {
+      "id": "AUD-1035",
+      "timestamp": "2026-09-18T19:58:30Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User K. Ramanathan (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1034",
+      "timestamp": "2026-09-18T19:58:29Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1033",
+      "timestamp": "2026-09-18T19:57:52Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1032",
+      "timestamp": "2026-09-18T19:53:34Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1031",
+      "timestamp": "2026-09-18T19:40:39Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1030",
+      "timestamp": "2026-09-18T19:40:37Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGOUT",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) logged out."
+    },
+    {
+      "id": "AUD-1029",
+      "timestamp": "2026-09-18T19:40:29Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGIN",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) (citizen) logged in successfully."
+    },
+    {
+      "id": "AUD-1028",
+      "timestamp": "2026-09-18T19:40:27Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGOUT",
+      "details": "User P. Soundararajan (TNPCB District Officer) logged out."
+    },
+    {
+      "id": "AUD-1027",
+      "timestamp": "2026-09-18T19:39:56Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1026",
+      "timestamp": "2026-09-18T19:39:54Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGOUT",
+      "details": "User K. Ramanathan logged out."
+    },
+    {
+      "id": "AUD-1025",
+      "timestamp": "2026-09-18T19:39:40Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User K. Ramanathan (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1024",
+      "timestamp": "2026-09-18T19:39:36Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1023",
+      "timestamp": "2026-09-18T19:39:22Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1022",
+      "timestamp": "2026-09-18T19:39:20Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGOUT",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) logged out."
+    },
+    {
+      "id": "AUD-1021",
+      "timestamp": "2026-09-18T19:39:14Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGIN",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) (citizen) logged in successfully."
+    },
+    {
+      "id": "AUD-1020",
+      "timestamp": "2026-09-18T19:39:12Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGOUT",
+      "details": "User P. Soundararajan (TNPCB District Officer) logged out."
+    },
+    {
+      "id": "AUD-1019",
+      "timestamp": "2026-09-18T19:39:10Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1018",
+      "timestamp": "2026-09-18T19:39:07Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGOUT",
+      "details": "User P. Soundararajan (TNPCB District Officer) logged out."
+    },
+    {
+      "id": "AUD-1017",
+      "timestamp": "2026-09-18T19:38:44Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1016",
+      "timestamp": "2026-09-18T19:38:42Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGOUT",
+      "details": "User K. Ramanathan logged out."
+    },
+    {
+      "id": "AUD-1015",
+      "timestamp": "2026-09-18T19:38:37Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User K. Ramanathan (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1014",
+      "timestamp": "2026-09-18T19:38:35Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1013",
+      "timestamp": "2026-09-18T19:38:31Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1012",
+      "timestamp": "2026-09-18T19:31:12Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGIN",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) (citizen) logged in successfully."
+    },
+    {
+      "id": "AUD-1011",
+      "timestamp": "2026-09-18T19:31:08Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1010",
+      "timestamp": "2026-09-18T19:30:55Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1009",
+      "timestamp": "2026-09-18T19:30:54Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGOUT",
+      "details": "User P. Soundararajan (TNPCB District Officer) logged out."
+    },
+    {
+      "id": "AUD-1008",
+      "timestamp": "2026-09-18T19:30:41Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1007",
+      "timestamp": "2026-09-18T19:30:38Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGOUT",
+      "details": "User K. Ramanathan logged out."
+    },
+    {
+      "id": "AUD-1006",
+      "timestamp": "2026-09-18T19:27:59Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User K. Ramanathan (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1005",
+      "timestamp": "2026-09-18T19:27:58Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1004",
+      "timestamp": "2026-09-18T19:27:50Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1003",
+      "timestamp": "2026-09-18T19:26:56Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1001",
+      "timestamp": "2026-09-18T08:00:00Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "SYSTEM_INITIALIZATION",
+      "details": "Bootstrapped PlumeBacktrace AI RBAC multi-portal security layer and initial state."
+    },
+    {
+      "id": "AUD-1002",
+      "timestamp": "2026-09-18T08:15:00Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "BROADCAST_PUBLISHED",
+      "details": "Published district-wide nocturnal CEMS compliance directive."
+    }
+  ],
+  "citizen_grievances": [
+    {
+      "id": "GRV-0891",
+      "citizen_name": "K. Venkatesh",
+      "citizen_email": "venkatesh.ranipet@gmail.com",
+      "odor_level": 4,
+      "pollutant_type": "Pungent Rotten Egg (H2S / Tannery Effluent)",
+      "location": "Near SIPCOT Sector 2 Residential Border, Ranipet",
+      "lat": 12.9242,
+      "lon": 79.3248,
+      "description": "Strong choking odor noticed between 11:30 PM and 1:30 AM. Visible dark plume drifting toward river colony.",
+      "photo_url": "simulation_plume_night.jpg",
+      "timestamp": "2026-09-18T01:45:00Z",
+      "status": "Under Investigation",
+      "assigned_to": "P. Soundararajan (TNPCB District Officer)"
+    },
+    {
+      "id": "GRV-0892",
+      "citizen_name": "M. Revathi",
+      "citizen_email": "revathi.m@yahoo.in",
+      "odor_level": 5,
+      "pollutant_type": "Acidic Chemical Burn (SO2 / Acid Mist)",
+      "location": "Palar River Embankment Road, Walajapet",
+      "lat": 12.9215,
+      "lon": 79.3342,
+      "description": "Severe eye and throat irritation reported by several school teachers and morning commuters.",
+      "photo_url": "simulation_river_smoke.jpg",
+      "timestamp": "2026-09-18T05:10:00Z",
+      "status": "Verified Violation",
+      "assigned_to": "P. Soundararajan (TNPCB District Officer)"
+    }
+  ],
+  "issued_notices": [
+    {
+      "id": "NOT-2026-001",
+      "factory_id": "FAC-01",
+      "factory_name": "Ranipet Tannery Consortium - Unit 4B",
+      "registration_no": "TNPCB/RN/TAN-0491",
+      "violation_type": "Nocturnal SO2 / H2S Threshold Exceedance (10 PM - 6 AM Curfew)",
+      "fine_inr": 1250000,
+      "issued_by": "P. Soundararajan (regulator)",
+      "issued_by_email": "regulator@tnpcb.gov.in",
+      "timestamp": "2026-09-18T06:30:00Z",
+      "evidence_summary": "Inverse dispersion match 99.4% confidence from Sentinel-5P sounding at 02:30 IST.",
+      "pdf_filename": "Statutory_Notice_FAC-01_NOT-2026-001.pdf"
+    }
+  ],
+  "plume_overrides": {
+    "SPIKE-001": {
+      "verified": true,
+      "verified_by": "admin@plume.ai",
+      "verified_at": "2026-09-18T09:00:00Z",
+      "notes": "Verified by ground sounder correlation"
+    }
+  }
+}

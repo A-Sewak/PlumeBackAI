@@ -1,0 +1,44 @@
+[
+  {
+    "id": "SCENARIO-01",
+    "title": "Midnight Palar Tannery Discharge (02:30 AM)",
+    "description": "Severe SO2 spike detected over Palar river basin downwind of SIPCOT Phase II during off-peak curfew hours.",
+    "locality": "Ranipet / Palar Industrial Corridor",
+    "plume_lat": 12.9355,
+    "plume_lon": 79.3365,
+    "gas_type": "SO2",
+    "gas_density_umol": 485.0,
+    "wind_speed_mps": 4.0,
+    "wind_direction_deg": 224.0,
+    "timestamp": "2026-09-18T02:30:00Z",
+    "expected_culprit": "Ranipet Tannery Consortium - Unit 4B"
+  },
+  {
+    "id": "SCENARIO-02",
+    "title": "SIPCOT Sector 2 Acid Mist Exceedance (03:45 AM)",
+    "description": "Anomalous NO2/Acid vapor cloud tracked near North Ranipet with South-Southwest night wind.",
+    "locality": "Ranipet / Palar Industrial Corridor",
+    "plume_lat": 12.942,
+    "plume_lon": 79.335,
+    "gas_type": "NO2",
+    "gas_density_umol": 395.0,
+    "wind_speed_mps": 3.5,
+    "wind_direction_deg": 205.0,
+    "timestamp": "2026-09-18T03:45:00Z",
+    "expected_culprit": "Tamil Nadu Chromates & Chemicals Ltd (TNCC)"
+  },
+  {
+    "id": "SCENARIO-03",
+    "title": "Walajapet Riverbank Solvent Anomaly (01:15 AM)",
+    "description": "Pre-dawn SO2/VOC discharge detected at Palar river bend with West wind dispersion.",
+    "locality": "Ranipet / Palar Industrial Corridor",
+    "plume_lat": 12.923,
+    "plume_lon": 79.349,
+    "gas_type": "SO2",
+    "gas_density_umol": 420.0,
+    "wind_speed_mps": 4.5,
+    "wind_direction_deg": 259.0,
+    "timestamp": "2026-09-18T01:15:00Z",
+    "expected_culprit": "Palar River Dye Works & Bleaching Unit 2"
+  }
+]
