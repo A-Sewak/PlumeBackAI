@@ -29,9 +29,10 @@
       100% { transform: scale(0.9); opacity: 0.9; }
     }
     /* Custom Scrollbars */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0f19; border-radius: 4px; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 h-screen w-screen overflow-hidden flex flex-col">
@@ -1593,10 +1594,11 @@
   </div>
 
   <!-- AUTHENTICATION LOGIN MODAL WITH ONE-CLICK DEMO LOGINS -->
-  <div id="loginModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-xl w-full space-y-5 shadow-2xl relative">
+  <!-- ponytail: scrollable overlay and max-h card to allow full vertical scrolling during signup -->
+  <div id="loginModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur z-50 overflow-y-auto p-3 sm:p-4 flex items-center justify-center">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 max-w-xl w-full shadow-2xl relative max-h-[92vh] flex flex-col my-auto">
       <!-- Modal Header -->
-      <div class="flex justify-between items-start">
+      <div class="flex justify-between items-start shrink-0 mb-3">
         <div class="flex items-center space-x-3">
           <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
             <i data-lucide="shield-check" class="w-5 h-5"></i>
@@ -1612,7 +1614,7 @@
       </div>
 
       <!-- Tab Switcher: Sign In vs Register -->
-      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0 mb-3">
         <button id="tabAuthLogin" onclick="setAuthModalMode('login')" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition flex items-center justify-center space-x-1.5">
           <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
           <span>Sign In</span>
@@ -1624,7 +1626,7 @@
       </div>
 
       <!-- SIGN IN SECTION -->
-      <div id="authModalLoginSection" class="space-y-4">
+      <div id="authModalLoginSection" class="space-y-4 overflow-y-auto pr-1 flex-1">
         <!-- Quick 1-Click Demo Login Role Cards -->
         <div>
           <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
@@ -1716,7 +1718,7 @@
       </div>
 
       <!-- REGISTRATION SECTION -->
-      <div id="authModalRegisterSection" class="hidden space-y-3.5 text-xs">
+      <div id="authModalRegisterSection" class="hidden space-y-3.5 text-xs overflow-y-auto pr-2 flex-1">
         <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
           <div class="font-bold text-slate-200 flex items-center space-x-1.5">
             <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
