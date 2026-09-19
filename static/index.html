@@ -1590,8 +1590,8 @@
   </div>
 
   <!-- AUTHENTICATION LOGIN MODAL WITH ONE-CLICK DEMO LOGINS -->
-  <!-- ponytail: scrollable overlay and max-h card to allow full vertical scrolling during signup -->
-  <div id="loginModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur z-50 overflow-y-auto p-3 sm:p-4 flex items-center justify-center">
+  <!-- ponytail: visible by default so login screen is the first thing seen on website open -->
+  <div id="loginModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur z-50 overflow-y-auto p-3 sm:p-4 flex items-center justify-center">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 max-w-xl w-full shadow-2xl relative max-h-[92vh] flex flex-col my-auto">
       <!-- Modal Header -->
       <div class="flex justify-between items-start shrink-0 mb-3">
@@ -2872,6 +2872,8 @@
     }
 
     async function initAuth() {
+      // ponytail: first thing seen on website open is the login screen
+      openLoginModal();
       if (authToken) {
         try {
           const res = await authFetch('/api/auth/me');
@@ -2885,8 +2887,9 @@
           console.error("Auth me check failed:", e);
         }
       }
-      // If no valid session, auto-login as super_admin for smooth demo experience
-      await demoLogin('super_admin', false);
+      authToken = '';
+      currentUser = null;
+      updateUserHeaderUI();
     }
 
     function openLoginModal() {
