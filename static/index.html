@@ -40,12 +40,12 @@
   <header class="h-14 border-b border-slate-800 bg-slate-900/90 backdrop-blur px-5 flex items-center justify-between z-20 shrink-0">
     <div class="flex items-center space-x-3">
       <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-        <i data-lucide="satellite" class="w-4 h-4"></i>
+        <i data-lucide="satellite" class="w-4 h-4" id="headerBrandIcon"></i>
       </div>
       <div>
         <div class="flex items-center space-x-2">
           <span class="font-extrabold tracking-wider text-sm bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">PLUMEBACKTRACE AI</span>
-          <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mono font-semibold">TROPOMI-S5P INVERSE ENGINE</span>
+          <span id="headerEngineBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mono font-semibold">TROPOMI-S5P INVERSE ENGINE</span>
         </div>
         <div class="text-[11px] text-slate-400">Palar River & Ranipet Industrial Monitoring Corridor (TNPCB)</div>
       </div>
@@ -69,6 +69,12 @@
 
     <!-- Right status badge & upload button -->
     <div class="flex items-center space-x-2.5">
+      <!-- Real-Time Live Clock Badge -->
+      <div id="headerLiveClock" class="hidden md:flex items-center space-x-2 text-xs bg-slate-950/80 border border-slate-800 px-3 py-1.5 rounded-lg text-emerald-400 font-mono font-bold shadow-inner">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="liveClockText">--:--:-- IST</span>
+      </div>
+
       <!-- User Profile Header & Role Badge -->
       <div id="userProfileHeader" class="flex items-center space-x-2 bg-slate-950/90 px-2.5 py-1 rounded-lg border border-slate-700/80">
         <div id="userAvatar" class="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-[11px] font-black text-amber-300">A</div>
@@ -131,7 +137,7 @@
   <div id="forensicsView" class="flex-1 flex overflow-hidden relative">
     
     <!-- Left Sidebar: Controls & Scenarios -->
-    <aside class="w-96 border-r border-slate-800 bg-slate-900/95 flex flex-col z-10 overflow-y-auto">
+    <aside id="forensicsSidebar" class="w-96 border-r border-slate-800 bg-slate-900/95 flex flex-col z-10 overflow-y-auto">
       <div class="p-4 space-y-4">
         
         <!-- Scenario Presets -->
@@ -247,6 +253,12 @@
 
     <!-- Center: Interactive Map Container -->
     <main class="flex-1 relative">
+      <!-- Return to Portal Floating Button (Shown when viewing map from regulator/industry portal) -->
+      <button id="btnReturnToPortal" onclick="switchView('portal')" class="hidden absolute top-4 left-4 z-20 px-3.5 py-2 rounded-xl bg-slate-900/95 hover:bg-slate-800 text-rose-300 hover:text-rose-200 border border-rose-500/50 shadow-2xl text-xs font-bold flex items-center space-x-2 transition">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span id="btnReturnToPortalText">Return to Regulator Portal</span>
+      </button>
+
       <!-- Interactive Map Target Mode Banner -->
       <div id="mapTargetBanner" class="hidden absolute top-4 left-1/2 transform -translate-x-1/2 z-20 bg-amber-500 text-slate-950 px-4 py-2 rounded-xl shadow-2xl border border-amber-300 font-bold text-xs flex items-center space-x-3">
         <div class="flex items-center space-x-1.5">
@@ -741,10 +753,11 @@
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center space-x-2">
               <i data-lucide="users" class="w-4 h-4 text-amber-400"></i>
-              <h2 class="text-sm font-bold text-slate-200">Authorized User Directory</h2>
+              <h2 class="text-sm font-bold text-slate-200">User Directory & Portal Access Control</h2>
               <span id="adminUserCount" class="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 mono border border-amber-500/30">0</span>
+              <span id="adminPendingBadge" class="hidden text-[11px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold mono border border-amber-500/50 animate-pulse">0 Pending</span>
             </div>
-            <span class="text-[11px] text-slate-500">Live JSON Persistence</span>
+            <span class="text-[11px] text-slate-500">Live Registration & Verification</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-300">
@@ -753,8 +766,9 @@
                   <th class="p-2.5">User</th>
                   <th class="p-2.5">Email</th>
                   <th class="p-2.5">Role</th>
-                  <th class="p-2.5">Assigned Scope</th>
-                  <th class="p-2.5 text-right">Actions</th>
+                  <th class="p-2.5">Status</th>
+                  <th class="p-2.5">Assigned Scope / Dept</th>
+                  <th class="p-2.5 text-right">Verification & Actions</th>
                 </tr>
               </thead>
               <tbody id="adminUserTableBody" class="divide-y divide-slate-800/60">
@@ -876,6 +890,43 @@
             <i data-lucide="send" class="w-4 h-4"></i>
             <span>Publish Broadcast Directive</span>
           </button>
+        </div>
+      </div>
+
+      <!-- Government Regulator Activity Logs (What Government PCB Does) -->
+      <div class="bg-slate-900/80 border border-rose-500/40 rounded-2xl p-5 shadow-xl space-y-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400">
+              <i data-lucide="shield" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-slate-100">Government Regulator Activity Logs (TNPCB Directorate)</h2>
+              <p class="text-[11px] text-slate-400">Real-time statutory enforcement, facility endorsements, citations, and soundings performed by Government Officers.</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono font-bold" id="adminGovLogsCount">0 Events</span>
+            <button onclick="loadAdminGovernmentLogs()" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center space-x-1.5 transition">
+              <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+        <div class="overflow-x-auto max-h-64 overflow-y-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-950/80 text-rose-300 uppercase text-[10px] font-mono border-b border-slate-800 sticky top-0">
+              <tr>
+                <th class="p-2.5">Live Timing (IST)</th>
+                <th class="p-2.5">Government Officer</th>
+                <th class="p-2.5">Action Tag</th>
+                <th class="p-2.5">Statutory Action Details</th>
+              </tr>
+            </thead>
+            <tbody id="adminGovLogBody" class="divide-y divide-slate-800/60 font-mono text-[11px]">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -1076,7 +1127,7 @@
             <span class="text-xs text-slate-400">Statutory Air Act Section 21 Enforcement Console</span>
           </div>
           <h1 class="text-2xl font-black text-slate-100 mt-2">Ranipet Industrial Corridor Surveillance & Legal Action</h1>
-          <p class="text-xs text-slate-400 mt-1 max-w-2xl">Examine multi-source evidence dossiers, monitor 24/7 continuous industrial emissions, and issue binding statutory show-cause notices.</p>
+          <p class="text-xs text-slate-400 mt-1 max-w-2xl">Monitor 10 km radial surveillance zone, inspect industrial emissions, and issue binding statutory show-cause notices.</p>
         </div>
         <div class="flex items-center space-x-2">
           <span class="text-[11px] px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono flex items-center space-x-1.5">
@@ -1086,83 +1137,171 @@
           <span class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 font-mono">50 Monitored Units</span>
           <button onclick="loadRegulatorPortalData()" class="px-3.5 py-1.5 rounded-lg bg-rose-950 hover:bg-rose-900 border border-rose-500/50 text-rose-300 text-xs font-bold flex items-center space-x-1.5">
             <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-            <span>Refresh Dossiers</span>
+            <span>Refresh Telemetry</span>
           </button>
         </div>
       </div>
 
-      <!-- Filter Controls -->
-      <div class="flex flex-wrap items-center gap-2 bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl text-xs">
-        <span class="text-slate-400 font-bold px-2">Filter Units:</span>
-        <button onclick="setRegulatorFilter('all')" id="btnRegFilterAll" class="px-3 py-1.5 rounded-lg font-bold bg-rose-500 text-slate-950">All Units (50)</button>
-        <button onclick="setRegulatorFilter('curfew')" id="btnRegFilterCurfew" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:text-white">🚨 24/7 Exceedance Violators</button>
-        <button onclick="setRegulatorFilter('repeat')" id="btnRegFilterRepeat" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:text-white">⚠️ Repeat Offenders</button>
-        <button onclick="setRegulatorFilter('so2')" id="btnRegFilterSO2" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-300 hover:text-white">🚨 SO2 Exceedances</button>
-      </div>
-
-      <!-- Main Regulator Columns: Flagged Plumes with Dossiers & Notice Issuer -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Flagged Plumes with Evidence Dossier (2 cols) -->
-        <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="satellite" class="w-4 h-4 text-rose-400"></i>
-              <h2 class="text-sm font-bold text-slate-200">Satellite Detection Events & Corroborated Evidence Dossiers</h2>
+      <!-- 10 KM REGULATORY SURVEILLANCE PERIMETER (OPENWEATHER REAL-TIME EXCEEDANCES & FINES) -->
+      <div id="govPerimeterCard" class="bg-gradient-to-br from-slate-900 via-rose-950/40 to-slate-950 border border-rose-500/50 rounded-2xl p-6 shadow-2xl space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-start space-x-3.5">
+            <div class="w-11 h-11 rounded-xl bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-400 shrink-0 shadow-lg shadow-rose-950/60">
+              <i data-lucide="radar" class="w-6 h-6"></i>
             </div>
-            <span class="text-[11px] text-slate-400 mono">TROPOMI Sentinel-5P Level 2</span>
+            <div>
+              <div class="flex items-center space-x-2.5 flex-wrap gap-y-1">
+                <h2 class="text-base font-black text-slate-100 tracking-wide flex items-center space-x-2">
+                  <span id="govPerimeterHeaderTitle">10.0 KM REGULATORY SURVEILLANCE PERIMETER</span>
+                </h2>
+                <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono font-bold flex items-center space-x-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping"></span>
+                  <span>OpenWeather API Live Sounding</span>
+                </span>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">
+                <strong class="text-slate-200" id="govStationNameDisplay">TNPCB District Environmental Office</strong> &bull; 
+                Station Location: <span class="mono text-rose-300 font-bold" id="govStationCoordsDisplay">12.9252°N, 79.3318°E</span> 
+                <span class="text-slate-500">(<span id="govStationRadiusSubText">10.0 km</span> radial surveillance zone)</span>
+              </p>
+            </div>
           </div>
-          <div id="regulatorPlumesList" class="space-y-4 max-h-[520px] overflow-y-auto pr-1">
-            <!-- Injected via JS -->
+          <div class="flex items-center space-x-2 self-start md:self-auto">
+            <button onclick="triggerGovPerimeterScan()" class="px-3.5 py-2 rounded-xl bg-rose-950 hover:bg-rose-900 border border-rose-500/40 text-rose-200 text-xs font-bold flex items-center space-x-2 transition shadow-md">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span id="govRefreshBtnText">Refresh 10 KM Scan</span>
+            </button>
+            <button onclick="viewGovPerimeterOnMap()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-xs font-black flex items-center space-x-2 shadow-xl shadow-rose-950/60 transition">
+              <i data-lucide="map-pin" class="w-4 h-4"></i>
+              <span id="govMapBtnText">View Perimeter on Google Map</span>
+            </button>
           </div>
         </div>
 
-        <!-- Issue Official Statutory Notice (1 col) -->
-        <div class="bg-slate-900/80 border border-rose-500/30 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
-          <div>
-            <div class="flex items-center space-x-2 mb-3">
-              <i data-lucide="gavel" class="w-4 h-4 text-rose-400"></i>
-              <h2 class="text-sm font-bold text-slate-200">Issue Statutory Citation</h2>
+        <!-- Search Radius Sliding Bar (0 to 20 km) -->
+        <div class="bg-slate-950/80 border border-rose-500/30 rounded-xl p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-inner">
+          <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-1.5">
+              <i data-lucide="sliders" class="w-4 h-4 text-rose-400"></i>
+              <span class="text-xs font-bold text-slate-200 font-mono uppercase tracking-wider">Search Radius:</span>
             </div>
-            <p class="text-[11px] text-slate-400 mb-4">Formulate official Section 21 Air Act Show-Cause Citation backed by inverse dispersion telemetry.</p>
+            <span id="govRadiusDisplay" class="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono font-black text-sm">10.0 KM</span>
+            <span class="text-[11px] text-slate-500 hidden sm:inline">(Ground sweep detection perimeter)</span>
+          </div>
+          <div class="flex items-center space-x-3 flex-1 max-w-md">
+            <span class="text-[10px] text-slate-400 font-mono font-bold">0 KM</span>
+            <input type="range" id="govRadiusSlider" min="0" max="20" step="0.5" value="10" oninput="onGovRadiusSliderChange(this.value)" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-rose-500 focus:outline-none">
+            <span class="text-[10px] text-slate-400 font-mono font-bold">20 KM</span>
+          </div>
+        </div>
 
-            <div class="space-y-3 text-xs">
-              <div>
-                <label class="text-[10px] text-slate-400 uppercase font-mono">Target Industrial Unit</label>
-                <select id="regNoticeTarget" onchange="onRegNoticeTargetChange()" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs">
-                  <option value="FAC-01">Ranipet Tannery Consortium - Unit 4B (FAC-01)</option>
-                  <option value="FAC-02">Tamil Nadu Chromates & Chemicals (FAC-02)</option>
-                  <option value="FAC-03">Palar River Dye Works Unit 2 (FAC-03)</option>
-                  <option value="FAC-04">SIPCOT Precision Electroplating (FAC-04)</option>
-                </select>
-              </div>
+        <!-- Metric KPI Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+            <div class="text-[10px] text-slate-400 uppercase font-mono">Surveillance Radius</div>
+            <div id="govRadiusKpiDisplay" class="text-xl font-black text-slate-100 mt-1 font-mono">10.0 KM</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Continuous Ground Sweep</div>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+            <div class="text-[10px] text-slate-400 uppercase font-mono">Monitored Facilities</div>
+            <div id="govPerimeterTotalCount" class="text-xl font-black text-cyan-400 mt-1 font-mono">--</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Inside 10 KM Zone</div>
+          </div>
+          <div class="bg-slate-950/80 border border-rose-500/40 rounded-xl p-3.5">
+            <div class="text-[10px] text-rose-400 uppercase font-mono font-bold">Exceeding CPCB Limit</div>
+            <div id="govPerimeterExceedCount" class="text-xl font-black text-rose-400 mt-1 font-mono">--</div>
+            <div class="text-[10px] text-rose-400/80 mt-0.5">&ge; 20 µg/m³ OpenWeather SO2</div>
+          </div>
+          <div class="bg-slate-950/80 border border-amber-500/40 rounded-xl p-3.5">
+            <div class="text-[10px] text-amber-400 uppercase font-mono font-bold">Total Penalties Assessed</div>
+            <div id="govPerimeterTotalFine" class="text-xl font-black text-amber-300 mt-1 font-mono">--</div>
+            <div class="text-[10px] text-amber-400/80 mt-0.5">Section 21 Statutory Fine</div>
+          </div>
+        </div>
 
-              <div>
-                <label class="text-[10px] text-slate-400 uppercase font-mono">Violation Category</label>
-                <select id="regNoticeType" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs">
-                  <option value="Statutory SO2 / H2S Threshold Exceedance (24/7 Continuous Enforcement)">Continuous Exceedance (24/7 Enforcement)</option>
-                  <option value="Bypass of Wet Alkaline Scrubber System During Peak Inversion">Bypass of Wet Alkaline Scrubber System</option>
-                  <option value="Unauthorized Chemical Venting During Night Shift">Unauthorized Chemical Venting During Night Shift</option>
-                  <option value="Failure of Continuous Emission Telemetry Link">Failure of Continuous Emission Telemetry Link</option>
-                </select>
-              </div>
+        <!-- Dynamic List of Exceeding Industries Tagged with Fine & Location -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
+            <span id="govPerimeterListTitle">EXCEEDING INDUSTRIAL FACILITIES IDENTIFIED WITHIN 10 KM</span>
+            <span id="govPerimeterTimestamp" class="text-[11px] text-slate-500">Live Sounding</span>
+          </div>
+          <div id="govPerimeterIndustriesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </div>
 
-              <div>
-                <label class="text-[10px] text-slate-400 uppercase font-mono">Statutory Penalty Amount (INR)</label>
-                <input type="number" id="regNoticeFine" value="1250000" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-rose-300 font-mono font-bold text-xs">
-              </div>
+      <!-- Pending New Industrial Facility Verifications (Dual Approval Protocol) -->
+      <div id="regulatorPendingIndustriesSection" class="hidden bg-slate-900/90 border border-cyan-500/40 rounded-2xl p-5 shadow-2xl space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-slate-100">Pending Industrial Facility Verifications (Air Act Section 21)</h2>
+              <p class="text-[11px] text-slate-400">Review new facility registrations, inspect proposed GPS coordinates, and grant Government PCB endorsement.</p>
+            </div>
+          </div>
+          <span id="regPendingCountBadge" class="text-xs px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold mono">0 Pending</span>
+        </div>
+        <div id="regulatorPendingIndustriesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <!-- Dynamically populated via fetchPendingIndustriesForRegulator() -->
+        </div>
+      </div>
 
-              <div>
-                <label class="text-[10px] text-slate-400 uppercase font-mono">Corroborated Evidence Summary</label>
-                <textarea id="regNoticeEvidence" rows="3" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 text-xs font-mono">Inverse atmospheric dispersion cone matches facility stack coordinates with 99.4% confidence during nocturnal thermal inversion. Ground sounder corroboration confirms SO2 exceedance.</textarea>
-              </div>
+      <!-- Issue Official Statutory Notice -->
+      <div class="bg-slate-900/80 border border-rose-500/30 rounded-2xl p-6 shadow-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center space-x-2.5">
+            <i data-lucide="gavel" class="w-5 h-5 text-rose-400"></i>
+            <div>
+              <h2 class="text-sm font-bold text-slate-200">Issue Statutory Citation Notice</h2>
+              <p class="text-[11px] text-slate-400">Formulate official Section 21 Air Act Show-Cause Citation backed by 10 km radial surveillance telemetry.</p>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono font-bold">Air Act §21</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="space-y-3">
+            <div>
+              <label class="text-[10px] text-slate-400 uppercase font-mono">Target Industrial Unit</label>
+              <select id="regNoticeTarget" onchange="onRegNoticeTargetChange()" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs">
+                <option value="FAC-01">Ranipet Tannery Consortium - Unit 4B (FAC-01)</option>
+                <option value="FAC-02">Tamil Nadu Chromates & Chemicals (FAC-02)</option>
+                <option value="FAC-03">Palar River Dye Works Unit 2 (FAC-03)</option>
+                <option value="FAC-04">SIPCOT Precision Electroplating (FAC-04)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-[10px] text-slate-400 uppercase font-mono">Violation Category</label>
+              <select id="regNoticeType" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs">
+                <option value="Statutory SO2 / H2S Threshold Exceedance (24/7 Continuous Enforcement)">Continuous Exceedance (24/7 Enforcement)</option>
+                <option value="Bypass of Wet Alkaline Scrubber System During Peak Inversion">Bypass of Wet Alkaline Scrubber System</option>
+                <option value="Unauthorized Chemical Venting During Night Shift">Unauthorized Chemical Venting During Night Shift</option>
+                <option value="Failure of Continuous Emission Telemetry Link">Failure of Continuous Emission Telemetry Link</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-[10px] text-slate-400 uppercase font-mono">Statutory Penalty Amount (INR)</label>
+              <input type="number" id="regNoticeFine" value="1250000" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-rose-300 font-mono font-bold text-xs">
             </div>
           </div>
 
-          <button onclick="submitRegulatorNotice()" class="mt-4 w-full py-2.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
-            <i data-lucide="file-warning" class="w-4 h-4"></i>
-            <span>Issue Official Statutory Notice</span>
-          </button>
+          <div class="flex flex-col justify-between space-y-3">
+            <div>
+              <label class="text-[10px] text-slate-400 uppercase font-mono">Corroborated Telemetry & Violation Summary</label>
+              <textarea id="regNoticeEvidence" rows="5" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 text-xs font-mono">Continuous atmospheric monitoring and OpenWeather live sounding within the 10 km Government Surveillance Perimeter confirm SO2 statutory threshold exceedance at monitored facility stack coordinates.</textarea>
+            </div>
+
+            <button onclick="submitRegulatorNotice()" class="w-full py-2.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+              <i data-lucide="file-warning" class="w-4 h-4"></i>
+              <span>Issue Official Statutory Notice</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1194,6 +1333,43 @@
           </table>
         </div>
       </div>
+
+      <!-- Administrator Activity & Oversight Logs (What Admin Does on Government Corridor) -->
+      <div class="bg-slate-900/80 border border-amber-500/40 rounded-2xl p-5 shadow-xl space-y-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+              <i data-lucide="shield-alert" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-slate-100">Administrator Oversight & System Directives Logs</h2>
+              <p class="text-[11px] text-slate-400">Real-time audit stream of facility endorsements, threshold changes, and official directives issued by Super Administrator.</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono font-bold" id="regAdminLogsCount">0 Events</span>
+            <button onclick="fetchRegulatorAdminLogs()" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center space-x-1.5 transition">
+              <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+        <div class="overflow-x-auto max-h-64 overflow-y-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-950/80 text-amber-300 uppercase text-[10px] font-mono border-b border-slate-800 sticky top-0">
+              <tr>
+                <th class="p-2.5">Live Timing (IST)</th>
+                <th class="p-2.5">Administrator</th>
+                <th class="p-2.5">Action Tag</th>
+                <th class="p-2.5">Oversight Action Details</th>
+              </tr>
+            </thead>
+            <tbody id="regAdminLogsBody" class="divide-y divide-slate-800/60 font-mono text-[11px]">
+              <!-- Injected dynamically via fetchRegulatorAdminLogs() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
 
@@ -1217,23 +1393,42 @@
         </div>
       </div>
 
+      <!-- Urgent Community Alert Directive Banner -->
+      <div id="citizenAlertBanner" class="bg-gradient-to-r from-red-950/95 via-rose-950/70 to-slate-950 border-2 border-red-500/80 rounded-2xl p-4 shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center space-x-3.5">
+          <div class="w-10 h-10 rounded-xl bg-red-600/30 border border-red-500 flex items-center justify-center text-red-400 shrink-0 shadow-lg shadow-red-950">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-red-400 animate-bounce"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 rounded bg-red-600 text-white font-black text-[10px] tracking-wider uppercase font-mono">POLLUTION ALERT</span>
+              <span class="font-bold text-red-200 text-xs">Palar Basin Elevated SO2 Inversion Advisory Active</span>
+            </div>
+            <p class="text-red-300/90 text-xs mt-0.5">Atmospheric thermal inversion has trapped industrial stack plumes across the residential corridor. Residents are advised to follow protective alert directives below.</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2 shrink-0">
+          <span class="text-[10px] mono text-red-300 font-bold px-2.5 py-1 rounded-lg bg-red-950 border border-red-500/60 animate-pulse">ACTIVE DIRECTIVE</span>
+        </div>
+      </div>
+
       <!-- Top Row: AQI Gauge & Health Recommendations -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- AQI Gauge (1 col) -->
-        <div class="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+        <div class="bg-slate-900/90 border border-red-500/40 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-3 text-xs">
               <span class="font-bold text-slate-300">Ambient Air Quality</span>
-              <span class="text-[10px] text-slate-500 mono">Palar Basin</span>
+              <span class="text-[10px] text-red-400 mono font-bold">● High Exposure Zone</span>
             </div>
             <div class="text-center py-3">
-              <div class="text-5xl font-black text-amber-400 font-mono" id="pubAqiVal">168</div>
-              <div class="text-xs font-black uppercase tracking-wider text-amber-400 mt-1" id="pubAqiCat">UNHEALTHY</div>
-              <p class="text-[11px] text-slate-400 mt-2">Dominant Pollutant: <strong class="text-slate-200">SO₂ (Sulfur Dioxide)</strong></p>
+              <div class="text-5xl font-black text-red-500 font-mono" id="pubAqiVal">168</div>
+              <div class="text-xs font-black uppercase tracking-wider text-red-400 bg-red-500/20 px-2.5 py-1 rounded-full border border-red-500/40 inline-block mt-2" id="pubAqiCat">🚨 UNHEALTHY AIR ALERT</div>
+              <p class="text-[11px] text-slate-400 mt-2">Dominant Pollutant: <strong class="text-red-300">SO₂ (Sulfur Dioxide)</strong></p>
             </div>
           </div>
           <div class="grid grid-cols-4 gap-1 text-center text-[10px] font-mono pt-3 border-t border-slate-800">
-            <div><span class="text-slate-500">SO₂</span><div class="font-bold text-slate-200" id="pubSo2">78 µg</div></div>
+            <div><span class="text-slate-500">SO₂</span><div class="font-bold text-red-400" id="pubSo2">78 µg</div></div>
             <div><span class="text-slate-500">PM2.5</span><div class="font-bold text-slate-200" id="pubPm25">62 µg</div></div>
             <div><span class="text-slate-500">PM10</span><div class="font-bold text-slate-200" id="pubPm10">115 µg</div></div>
             <div><span class="text-slate-500">NO₂</span><div class="font-bold text-slate-200" id="pubNo2">38 µg</div></div>
@@ -1241,30 +1436,42 @@
         </div>
 
         <!-- Health Advisories (2 cols) -->
-        <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+        <div class="lg:col-span-2 bg-gradient-to-br from-slate-900 via-red-950/25 to-slate-950 border-2 border-red-500/60 rounded-2xl p-5 shadow-2xl flex flex-col justify-between">
           <div>
-            <div class="flex items-center space-x-2 mb-3">
-              <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400"></i>
-              <h2 class="text-sm font-bold text-slate-200">Public Health Protective Directives</h2>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i>
+                <h2 class="text-sm font-bold text-red-200">Public Health Protective Directives & Air Alerts</h2>
+              </div>
+              <span class="px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 text-[10px] font-bold font-mono">STATUS: HIGH ALERT</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-                <div class="font-bold text-emerald-400 mb-1">🏠 Nocturnal Window Closure</div>
-                <p class="text-slate-400 text-[11px]">Keep residential windows closed between 10 PM and 6 AM due to nocturnal thermal inversion trapping industrial stack plumes.</p>
+              <div class="bg-red-950/40 p-3 rounded-xl border border-red-500/50 shadow-md">
+                <div class="font-bold text-red-400 mb-1 flex items-center space-x-1.5">
+                  <span class="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block"></span>
+                  <span>🏠 Nocturnal Window Closure Alert</span>
+                </div>
+                <p class="text-red-200/90 text-[11px]">Keep residential windows closed between 10 PM and 6 AM due to nocturnal thermal inversion trapping industrial stack plumes.</p>
               </div>
-              <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-                <div class="font-bold text-emerald-400 mb-1">😷 Masking Advisory</div>
-                <p class="text-slate-400 text-[11px]">Wear protective N95/FFP2 masks when commuting through SIPCOT Phase I & II and along Walajapet Road.</p>
+              <div class="bg-red-950/40 p-3 rounded-xl border border-red-500/50 shadow-md">
+                <div class="font-bold text-red-400 mb-1 flex items-center space-x-1.5">
+                  <span class="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block"></span>
+                  <span>😷 Masking Advisory Alert</span>
+                </div>
+                <p class="text-red-200/90 text-[11px]">Wear protective N95/FFP2 masks when commuting through SIPCOT Phase I & II and along Walajapet Road.</p>
               </div>
-              <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-                <div class="font-bold text-emerald-400 mb-1">👶 Vulnerable Populations</div>
-                <p class="text-slate-400 text-[11px]">Children, elderly, and asthma patients should avoid morning exercise within 800m of industrial stacks.</p>
+              <div class="bg-red-950/40 p-3 rounded-xl border border-red-500/50 shadow-md">
+                <div class="font-bold text-red-400 mb-1 flex items-center space-x-1.5">
+                  <span class="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block"></span>
+                  <span>👶 Vulnerable Population Alert</span>
+                </div>
+                <p class="text-red-200/90 text-[11px]">Children, elderly, and asthma patients should suspend morning exercise within 800m of industrial stacks.</p>
               </div>
             </div>
           </div>
-          <div class="text-[11px] text-slate-500 mt-3 flex items-center justify-between border-t border-slate-800 pt-2">
-            <span>Verified Source: TNPCB Care Air Centre & Sentinel-5P Satellite Feed</span>
-            <span class="mono">Last Updated: Today</span>
+          <div class="text-[11px] text-slate-400 mt-3 flex items-center justify-between border-t border-slate-800 pt-2">
+            <span>Verified Source: TNPCB Care Air Centre & OpenWeather Live Sounding</span>
+            <span class="mono text-red-400 font-bold" id="citizenAlertLiveTime">Active Alert Directive</span>
           </div>
         </div>
       </div>
@@ -1404,91 +1611,326 @@
         </button>
       </div>
 
-      <!-- Quick 1-Click Demo Login Role Cards -->
-      <div>
-        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-          <span>⚡ Select a Demo Role to Instant Login</span>
-          <span class="text-amber-400 text-[10px]">One-Click Ready</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <!-- Super Admin -->
-          <button onclick="demoLogin('super_admin')" class="bg-slate-950/80 hover:bg-amber-950/40 border border-amber-500/40 hover:border-amber-400 p-3 rounded-xl text-left transition flex items-center space-x-3 group">
-            <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-sm font-black shrink-0">👑</div>
-            <div class="min-w-0">
-              <div class="text-xs font-black text-amber-300 flex items-center space-x-1.5">
-                <span>Super Admin</span>
-              </div>
-              <div class="text-[10px] text-slate-400 truncate">admin@plume.ai</div>
-              <div class="text-[9px] text-slate-500">Full system & user controls</div>
-            </div>
-          </button>
-
-          <!-- Industry Manager -->
-          <button onclick="demoLogin('industry_manager')" class="bg-slate-950/80 hover:bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-400 p-3 rounded-xl text-left transition flex items-center space-x-3 group">
-            <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-sm font-black shrink-0">🏭</div>
-            <div class="min-w-0">
-              <div class="text-xs font-black text-cyan-300 flex items-center space-x-1.5">
-                <span>Industry Manager</span>
-              </div>
-              <div class="text-[10px] text-slate-400 truncate">manager@tannery.com</div>
-              <div class="text-[9px] text-slate-500">Ranipet Tannery (FAC-01) CEMS</div>
-            </div>
-          </button>
-
-          <!-- PCB Regulator -->
-          <button onclick="demoLogin('regulator')" class="bg-slate-950/80 hover:bg-rose-950/40 border border-rose-500/40 hover:border-rose-400 p-3 rounded-xl text-left transition flex items-center space-x-3 group">
-            <div class="w-8 h-8 rounded-lg bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 text-sm font-black shrink-0">🛡️</div>
-            <div class="min-w-0">
-              <div class="text-xs font-black text-rose-300 flex items-center space-x-1.5">
-                <span>PCB Regulator</span>
-              </div>
-              <div class="text-[10px] text-slate-400 truncate">regulator@tnpcb.gov.in</div>
-              <div class="text-[9px] text-slate-500">Evidence dossiers & notices</div>
-            </div>
-          </button>
-
-          <!-- Citizen Resident -->
-          <button onclick="demoLogin('citizen')" class="bg-slate-950/80 hover:bg-emerald-950/40 border border-emerald-500/40 hover:border-emerald-400 p-3 rounded-xl text-left transition flex items-center space-x-3 group">
-            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-sm font-black shrink-0">👥</div>
-            <div class="min-w-0">
-              <div class="text-xs font-black text-emerald-300 flex items-center space-x-1.5">
-                <span>Citizen Resident</span>
-              </div>
-              <div class="text-[10px] text-slate-400 truncate">citizen@ranipet.org</div>
-              <div class="text-[9px] text-slate-500">Masked map & odor reports</div>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Divider -->
-      <div class="relative flex py-1 items-center">
-        <div class="flex-grow border-t border-slate-800"></div>
-        <span class="flex-shrink mx-3 text-[10px] text-slate-500 uppercase font-mono">Or Sign In with Credentials</span>
-        <div class="flex-grow border-t border-slate-800"></div>
-      </div>
-
-      <!-- Standard Form -->
-      <form onsubmit="handleManualLogin(event)" class="space-y-3 text-xs">
-        <div id="loginErrorMsg" class="hidden p-2.5 rounded-lg bg-red-950/70 border border-red-500/60 text-red-300 text-xs flex items-center space-x-2">
-          <i data-lucide="alert-circle" class="w-4 h-4 text-red-400 shrink-0"></i>
-          <span id="loginErrorText">Invalid credentials</span>
-        </div>
-
-        <div>
-          <label class="text-[10px] text-slate-400 uppercase font-mono">Email Address</label>
-          <input type="email" id="loginInputEmail" required placeholder="name@domain.com" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
-        </div>
-
-        <div>
-          <label class="text-[10px] text-slate-400 uppercase font-mono">Password</label>
-          <input type="password" id="loginInputPassword" required placeholder="••••••••" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
-        </div>
-
-        <button type="submit" id="btnLoginSubmit" class="w-full py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs rounded-xl shadow-lg transition">
-          Sign In
+      <!-- Tab Switcher: Sign In vs Register -->
+      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <button id="tabAuthLogin" onclick="setAuthModalMode('login')" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition flex items-center justify-center space-x-1.5">
+          <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+          <span>Sign In</span>
         </button>
-      </form>
+        <button id="tabAuthRegister" onclick="setAuthModalMode('register')" class="flex-1 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200 transition flex items-center justify-center space-x-1.5">
+          <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+          <span>Register for Access</span>
+        </button>
+      </div>
+
+      <!-- SIGN IN SECTION -->
+      <div id="authModalLoginSection" class="space-y-4">
+        <!-- Quick 1-Click Demo Login Role Cards -->
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+            <span>⚡ Select a Demo Role to Instant Login</span>
+            <span class="text-amber-400 text-[10px]">One-Click Ready</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <!-- Super Admin -->
+            <button onclick="demoLogin('super_admin')" class="bg-slate-950/80 hover:bg-amber-950/40 border border-amber-500/40 hover:border-amber-400 p-3 rounded-xl text-left transition flex items-center space-x-3 group">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-sm font-black shrink-0">👑</div>
+              <div class="min-w-0">
+                <div class="text-xs font-black text-amber-300 flex items-center space-x-1.5">
+                  <span>Super Admin</span>
+                </div>
+                <div class="text-[10px] text-slate-400 truncate">admin@plume.ai</div>
+                <div class="text-[9px] text-slate-500">Full system & user controls</div>
+              </div>
+            </button>
+
+            <!-- Industry Manager -->
+            <button onclick="demoLogin('industry_manager')" class="bg-slate-950/80 hover:bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-400 p-3 rounded-xl text-left transition flex items-center space-x-3 group">
+              <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-sm font-black shrink-0">🏭</div>
+              <div class="min-w-0">
+                <div class="text-xs font-black text-cyan-300 flex items-center space-x-1.5">
+                  <span>Industry Manager</span>
+                </div>
+                <div class="text-[10px] text-slate-400 truncate">manager@tannery.com</div>
+                <div class="text-[9px] text-slate-500">Ranipet Tannery (FAC-01) CEMS</div>
+              </div>
+            </button>
+
+            <!-- PCB Regulator -->
+            <button onclick="demoLogin('regulator')" class="bg-slate-950/80 hover:bg-rose-950/40 border border-rose-500/40 hover:border-rose-400 p-3 rounded-xl text-left transition flex items-center space-x-3 group">
+              <div class="w-8 h-8 rounded-lg bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 text-sm font-black shrink-0">🛡️</div>
+              <div class="min-w-0">
+                <div class="text-xs font-black text-rose-300 flex items-center space-x-1.5">
+                  <span>PCB Regulator</span>
+                </div>
+                <div class="text-[10px] text-slate-400 truncate">regulator@tnpcb.gov.in</div>
+                <div class="text-[9px] text-slate-500">Evidence dossiers & notices</div>
+              </div>
+            </button>
+
+            <!-- Citizen Resident -->
+            <button onclick="demoLogin('citizen')" class="bg-slate-950/80 hover:bg-emerald-950/40 border border-emerald-500/40 hover:border-emerald-400 p-3 rounded-xl text-left transition flex items-center space-x-3 group">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-sm font-black shrink-0">👥</div>
+              <div class="min-w-0">
+                <div class="text-xs font-black text-emerald-300 flex items-center space-x-1.5">
+                  <span>Citizen Resident</span>
+                </div>
+                <div class="text-[10px] text-slate-400 truncate">citizen@ranipet.org</div>
+                <div class="text-[9px] text-slate-500">Masked map & odor reports</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-3 text-[10px] text-slate-500 uppercase font-mono">Or Sign In with Email</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+
+        <!-- Standard Form -->
+        <form onsubmit="handleManualLogin(event)" class="space-y-3 text-xs">
+          <div id="loginErrorMsg" class="hidden p-2.5 rounded-lg bg-red-950/70 border border-red-500/60 text-red-300 text-xs flex items-center space-x-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-red-400 shrink-0"></i>
+            <span id="loginErrorText">Invalid credentials</span>
+          </div>
+
+          <div>
+            <label class="text-[10px] text-slate-400 uppercase font-mono">Email Address</label>
+            <input type="email" id="loginInputEmail" required placeholder="name@domain.com" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+          </div>
+
+          <div>
+            <label class="text-[10px] text-slate-400 uppercase font-mono">Password</label>
+            <input type="password" id="loginInputPassword" required placeholder="••••••••" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+          </div>
+
+          <button type="submit" id="btnLoginSubmit" class="w-full py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs rounded-xl shadow-lg transition">
+            Sign In
+          </button>
+          <div class="text-center pt-1">
+            <button type="button" onclick="setAuthModalMode('register')" class="text-[11px] text-cyan-400 hover:underline">New user? Register for Industry or Government Portal access →</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- REGISTRATION SECTION -->
+      <div id="authModalRegisterSection" class="hidden space-y-3.5 text-xs">
+        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+          <div class="font-bold text-slate-200 flex items-center space-x-1.5">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+            <span>Portal Registration & Identity Verification</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+            Industrial Facility Managers and Government Regulators must register and be verified by the TNPCB Administrator before login access is granted.
+          </p>
+        </div>
+
+        <div id="regErrorMsg" class="hidden p-2.5 rounded-lg bg-red-950/70 border border-red-500/60 text-red-300 text-xs flex items-center space-x-2">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-red-400 shrink-0"></i>
+          <span id="regErrorText">Registration error</span>
+        </div>
+
+        <div id="regSuccessMsg" class="hidden p-2.5 rounded-lg bg-emerald-950/70 border border-emerald-500/60 text-emerald-300 text-xs flex items-center space-x-2">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+          <span id="regSuccessText">Registration submitted successfully</span>
+        </div>
+
+        <form onsubmit="handleRegisterSubmit(event)" class="space-y-3">
+          <div>
+            <label class="text-[10px] text-slate-400 uppercase font-mono">Full Name</label>
+            <input type="text" id="regInputName" required placeholder="e.g. R. Sundaram (Plant Head)" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+          </div>
+
+          <div>
+            <label class="text-[10px] text-slate-400 uppercase font-mono">Official Email Address</label>
+            <input type="email" id="regInputEmail" required placeholder="name@industry.com or officer@tnpcb.gov.in" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+          </div>
+
+          <div>
+            <label class="text-[10px] text-slate-400 uppercase font-mono">Password</label>
+            <input type="password" id="regInputPassword" required minlength="6" placeholder="At least 6 characters" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+          </div>
+
+          <div>
+            <label class="text-[10px] text-slate-400 uppercase font-mono">Role Category</label>
+            <select id="regInputRole" onchange="onRegRoleChange()" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+              <option value="industry_manager">🏭 Industry Facility Manager (Requires Admin Verification)</option>
+              <option value="regulator">🛡️ Government PCB Regulator (Requires Admin Verification)</option>
+              <option value="citizen">👥 Citizen Resident (Instant Clean Air Access)</option>
+            </select>
+          </div>
+
+          <div id="regFactoryGroup" class="space-y-3">
+            <div>
+              <label class="text-[10px] text-slate-400 uppercase font-mono">Select Industrial Unit / Facility</label>
+              <select id="regInputFactory" onchange="onRegFactoryChange()" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+                <option value="FAC-01">Ranipet Tannery Consortium - Unit 4B (FAC-01)</option>
+                <option value="FAC-02">Tamil Nadu Chromates & Chemicals (FAC-02)</option>
+                <option value="FAC-03">Palar River Dye Works Unit 2 (FAC-03)</option>
+                <option value="FAC-04">SIPCOT Precision Electroplating (FAC-04)</option>
+                <option value="FAC-05">Ranipet Bio-Synthetics & Active Solvents (FAC-05)</option>
+                <option value="FAC-06">Vellore Agro Fertilizers & Ammonia Plant (FAC-06)</option>
+                <option value="OTHER">➕ Other Industrial Unit / Register New Facility</option>
+              </select>
+            </div>
+
+            <!-- Existing Unit Location Verification Block -->
+            <div id="regExistingFactoryLocationBlock" class="p-3 bg-slate-950/80 border border-cyan-500/30 rounded-xl space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-cyan-400 flex items-center space-x-1.5">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-cyan-400"></i>
+                  <span>Exact Facility Location Coordinates *</span>
+                </span>
+                <button type="button" onclick="detectExistingFactoryLocation()" class="text-[10px] text-cyan-400 hover:text-cyan-300 font-mono flex items-center space-x-1">
+                  <span>📍 Auto-Detect GPS</span>
+                </button>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <span class="text-[9px] text-slate-500 font-mono">LATITUDE</span>
+                  <input type="number" step="0.0001" id="regExistingFactoryLat" value="12.9245" placeholder="12.9245" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:border-cyan-500 outline-none mono">
+                </div>
+                <div>
+                  <span class="text-[9px] text-slate-500 font-mono">LONGITUDE</span>
+                  <input type="number" step="0.0001" id="regExistingFactoryLon" value="79.3248" placeholder="79.3248" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:border-cyan-500 outline-none mono">
+                </div>
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-400 uppercase font-mono">Facility Corridor Address</label>
+                <input type="text" id="regExistingFactoryAddress" value="SIPCOT Phase II, Leather Finishing Zone, Ranipet" class="w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+              </div>
+            </div>
+
+            <!-- New Industry / Custom Unit Fields -->
+            <div id="regNewFactoryFields" class="hidden space-y-3 p-3 bg-slate-950/80 border border-cyan-500/40 rounded-xl">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-cyan-400 flex items-center space-x-1.5">
+                  <i data-lucide="plus-circle" class="w-3.5 h-3.5 inline text-cyan-400"></i>
+                  <span>New Industrial Facility Details</span>
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono">Air Act Reg</span>
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 uppercase font-mono">New Industry / Facility Name *</label>
+                <input type="text" id="regNewFactoryName" placeholder="e.g. Apex Synthetics & Chemical Works Ltd" class="w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+              </div>
+
+              <div>
+                <div class="flex justify-between items-center">
+                  <label class="text-[10px] text-slate-400 uppercase font-mono">Industry GPS Location Coordinates *</label>
+                  <button type="button" onclick="detectSignupLocation()" class="text-[10px] text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 font-mono">
+                    <span>📍 Auto-Detect GPS</span>
+                  </button>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                  <div>
+                    <span class="text-[9px] text-slate-500 font-mono">LATITUDE</span>
+                    <input type="number" step="0.0001" id="regNewFactoryLat" placeholder="e.g. 12.9280" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:border-cyan-500 outline-none mono">
+                  </div>
+                  <div>
+                    <span class="text-[9px] text-slate-500 font-mono">LONGITUDE</span>
+                    <input type="number" step="0.0001" id="regNewFactoryLon" placeholder="e.g. 79.3320" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:border-cyan-500 outline-none mono">
+                  </div>
+                </div>
+                <div class="text-[10px] text-slate-500 mt-1 flex justify-between">
+                  <span>Ranipet Cluster Range: ~12.92°N, 79.33°E</span>
+                  <button type="button" onclick="pickFromMapForSignup()" class="text-emerald-400 hover:underline">🗺️ Pick from Google Map</button>
+                </div>
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 uppercase font-mono">Corridor Address / SIPCOT Phase</label>
+                <input type="text" id="regNewFactoryAddress" placeholder="SIPCOT Industrial Area Phase III, Ranipet" class="w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+              </div>
+
+              <div class="text-[11px] text-cyan-300 bg-cyan-950/40 p-2.5 rounded-lg border border-cyan-500/40 space-y-1">
+                <div class="font-bold flex items-center space-x-1">
+                  <span>🏛️ Dual Verification & Mapping Protocol:</span>
+                </div>
+                <p class="text-slate-300 leading-relaxed text-[10px]">
+                  Both the <strong>Government PCB Regulator</strong> and the <strong>Super Admin</strong> must verify and approve this industry. Once both verify it, its location will be permanently registered and plotted on Google Maps.
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-[10px] text-slate-400 uppercase font-mono">Industry Type / Manufacturing Sector</label>
+              <select id="regInputIndustryType" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-cyan-500 outline-none">
+                <option value="Tannery & Leather Processing">👞 Tannery & Leather Processing</option>
+                <option value="Chemical & Petrochemical Manufacturing">🧪 Chemical & Petrochemical Manufacturing</option>
+                <option value="Textile Dyeing & Bleaching">🧵 Textile Dyeing & Bleaching</option>
+                <option value="Electroplating & Surface Treatment">⚙️ Electroplating & Surface Treatment</option>
+                <option value="Pharmaceutical & API Synthesis">💊 Pharmaceutical & API Synthesis</option>
+                <option value="Thermal Power & Boiler Operations">⚡ Thermal Power & Boiler Operations</option>
+                <option value="Foundry & Smelting Works">🔥 Foundry & Smelting Works</option>
+                <option value="General Engineering & Fabrication">🏭 General Engineering & Fabrication</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="regDeptGroup" class="hidden space-y-3">
+            <div>
+              <label class="text-[10px] text-slate-400 uppercase font-mono">Government Department / Office Designation *</label>
+              <input type="text" id="regInputDept" value="TNPCB District Environmental Office" placeholder="e.g. TNPCB District Environmental Laboratory, Ranipet" class="w-full mt-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-rose-500 outline-none">
+            </div>
+
+            <div class="p-3 bg-slate-950/80 border border-rose-500/40 rounded-xl space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-rose-400 flex items-center space-x-1.5">
+                  <i data-lucide="shield" class="w-3.5 h-3.5 inline text-rose-400"></i>
+                  <span>Government Station Location (10 KM Surveillance Hub) *</span>
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono">10 KM Radius</span>
+              </div>
+              <p class="text-[10px] text-slate-400">
+                This exact location establishes your 10 km radial surveillance perimeter to monitor industries exceeding OpenWeather emission standards.
+              </p>
+
+              <div>
+                <div class="flex justify-between items-center">
+                  <label class="text-[10px] text-slate-400 uppercase font-mono">Station GPS Coordinates *</label>
+                  <button type="button" onclick="detectGovSignupLocation()" class="text-[10px] text-rose-400 hover:text-rose-300 flex items-center space-x-1 font-mono">
+                    <span>📍 Auto-Detect GPS</span>
+                  </button>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                  <div>
+                    <span class="text-[9px] text-slate-500 font-mono">LATITUDE</span>
+                    <input type="number" step="0.0001" id="regGovLat" value="12.9252" placeholder="12.9252" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:border-rose-500 outline-none mono">
+                  </div>
+                  <div>
+                    <span class="text-[9px] text-slate-500 font-mono">LONGITUDE</span>
+                    <input type="number" step="0.0001" id="regGovLon" value="79.3318" placeholder="79.3318" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-slate-200 text-xs focus:border-rose-500 outline-none mono">
+                  </div>
+                </div>
+                <div class="text-[10px] text-slate-500 mt-1 flex justify-between">
+                  <span>Ranipet Station Default: 12.9252°N, 79.3318°E</span>
+                  <button type="button" onclick="pickFromMapForGovSignup()" class="text-rose-400 hover:underline">🗺️ Pick from Google Map</button>
+                </div>
+              </div>
+
+              <div>
+                <label class="text-[10px] text-slate-400 uppercase font-mono">Station Address / Regional Headquarters *</label>
+                <input type="text" id="regGovAddress" value="TNPCB District Environmental Office, Ranipet Industrial Belt" placeholder="TNPCB District Environmental Office, Ranipet" class="w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 text-xs focus:border-rose-500 outline-none">
+              </div>
+            </div>
+          </div>
+
+          <div id="regVerificationNote" class="text-[11px] text-amber-300 bg-amber-950/40 p-2.5 rounded-lg border border-amber-500/40">
+            ⚠️ Industrial accounts require verification by the TNPCB Administrator before login.
+          </div>
+
+          <button type="submit" id="btnRegSubmit" class="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-lg transition">
+            Submit Registration
+          </button>
+          <div class="text-center pt-1">
+            <button type="button" onclick="setAuthModalMode('login')" class="text-[11px] text-cyan-400 hover:underline">Already registered? Sign In →</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -1758,6 +2200,8 @@
     let gMapMarkers = [];
     let gMapPolylines = [];
     let gMapFactoryMarkers = [];
+    let gMapPerimeterLayers = [];
+    let govPerimeterData = null;
     let maplibreFactoryMarkers = [];
     let gMapInfoWindow = null;
     let isTilt3D = true;
@@ -2453,6 +2897,7 @@
         m.classList.remove('hidden');
         const err = document.getElementById('loginErrorMsg');
         if (err) err.classList.add('hidden');
+        setAuthModalMode('login');
         lucide.createIcons();
       }
     }
@@ -2460,6 +2905,346 @@
     function closeLoginModal() {
       const m = document.getElementById('loginModal');
       if (m) m.classList.add('hidden');
+    }
+
+    function setAuthModalMode(mode) {
+      const loginSection = document.getElementById('authModalLoginSection');
+      const registerSection = document.getElementById('authModalRegisterSection');
+      const tabLogin = document.getElementById('tabAuthLogin');
+      const tabRegister = document.getElementById('tabAuthRegister');
+      const errBox = document.getElementById('loginErrorMsg');
+      const regErr = document.getElementById('regErrorMsg');
+      const regSucc = document.getElementById('regSuccessMsg');
+
+      if (errBox) errBox.classList.add('hidden');
+      if (regErr) regErr.classList.add('hidden');
+      if (regSucc) regSucc.classList.add('hidden');
+
+      if (mode === 'register') {
+        if (loginSection) loginSection.classList.add('hidden');
+        if (registerSection) registerSection.classList.remove('hidden');
+        if (tabLogin) tabLogin.className = "flex-1 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200 transition flex items-center justify-center space-x-1.5";
+        if (tabRegister) tabRegister.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition flex items-center justify-center space-x-1.5";
+        onRegRoleChange();
+      } else {
+        if (registerSection) registerSection.classList.add('hidden');
+        if (loginSection) loginSection.classList.remove('hidden');
+        if (tabRegister) tabRegister.className = "flex-1 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200 transition flex items-center justify-center space-x-1.5";
+        if (tabLogin) tabLogin.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition flex items-center justify-center space-x-1.5";
+      }
+      lucide.createIcons();
+    }
+
+    function onRegRoleChange() {
+      const role = document.getElementById('regInputRole')?.value || 'industry_manager';
+      const facGroup = document.getElementById('regFactoryGroup');
+      const deptGroup = document.getElementById('regDeptGroup');
+
+      if (role === 'industry_manager') {
+        if (facGroup) facGroup.classList.remove('hidden');
+        if (deptGroup) deptGroup.classList.add('hidden');
+        onRegFactoryChange();
+      } else if (role === 'regulator') {
+        if (facGroup) facGroup.classList.add('hidden');
+        if (deptGroup) deptGroup.classList.remove('hidden');
+        const note = document.getElementById('regVerificationNote');
+        if (note) {
+          note.innerText = "🛡️ Government Regulator accounts require credential verification by the Super Admin before activation.";
+          note.className = "text-[11px] text-rose-300 bg-rose-950/40 p-2.5 rounded-lg border border-rose-500/40";
+        }
+      } else {
+        if (facGroup) facGroup.classList.add('hidden');
+        if (deptGroup) deptGroup.classList.add('hidden');
+        const note = document.getElementById('regVerificationNote');
+        if (note) {
+          note.innerText = "👥 Citizen Resident accounts are activated instantly for clean air tracking and public grievance reporting.";
+          note.className = "text-[11px] text-emerald-300 bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-500/40";
+        }
+      }
+    }
+
+    const FACTORY_DEFAULT_COORDS = {
+      'FAC-01': { lat: 12.9245, lon: 79.3248, addr: 'SIPCOT Phase II, Leather Finishing Zone, Ranipet' },
+      'FAC-02': { lat: 12.9312, lon: 79.3295, addr: 'SIPCOT Phase I, Chemical Complex, Ranipet' },
+      'FAC-03': { lat: 12.9189, lon: 79.3182, addr: 'Palar River Bank Corridor, Dyeing Enclave, Ranipet' },
+      'FAC-04': { lat: 12.9276, lon: 79.3361, addr: 'SIPCOT Phase III, Electroplating Sector, Ranipet' },
+      'FAC-05': { lat: 12.9341, lon: 79.3214, addr: 'Ranipet Bio-Synthetics Zone, Active Solvents, Ranipet' },
+      'FAC-06': { lat: 12.9215, lon: 79.3402, addr: 'Vellore Highway Agro Chemical Plant, Ranipet' }
+    };
+
+    function onRegFactoryChange() {
+      const factoryVal = document.getElementById('regInputFactory')?.value || 'FAC-01';
+      const newFields = document.getElementById('regNewFactoryFields');
+      const existingBlock = document.getElementById('regExistingFactoryLocationBlock');
+      const note = document.getElementById('regVerificationNote');
+
+      if (factoryVal === 'OTHER') {
+        if (newFields) newFields.classList.remove('hidden');
+        if (existingBlock) existingBlock.classList.add('hidden');
+        if (note) {
+          note.innerText = "🏛️ New Industry Notice: Requires dual verification by both the Government PCB Regulator and the Super Admin before activation & mapping on Google Maps.";
+          note.className = "text-[11px] text-cyan-300 bg-cyan-950/40 p-2.5 rounded-lg border border-cyan-500/40";
+        }
+      } else {
+        if (newFields) newFields.classList.add('hidden');
+        if (existingBlock) existingBlock.classList.remove('hidden');
+        const coords = FACTORY_DEFAULT_COORDS[factoryVal];
+        if (coords) {
+          const latInput = document.getElementById('regExistingFactoryLat');
+          const lonInput = document.getElementById('regExistingFactoryLon');
+          const addrInput = document.getElementById('regExistingFactoryAddress');
+          if (latInput) latInput.value = coords.lat.toFixed(4);
+          if (lonInput) lonInput.value = coords.lon.toFixed(4);
+          if (addrInput) addrInput.value = coords.addr;
+        }
+        if (note) {
+          note.innerText = "⚠️ Industrial Facility accounts require verification by the TNPCB Administrator before login access is granted.";
+          note.className = "text-[11px] text-amber-300 bg-amber-950/40 p-2.5 rounded-lg border border-amber-500/40";
+        }
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function detectExistingFactoryLocation() {
+      const latInput = document.getElementById('regExistingFactoryLat');
+      const lonInput = document.getElementById('regExistingFactoryLon');
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            if (latInput) latInput.value = pos.coords.latitude.toFixed(4);
+            if (lonInput) lonInput.value = pos.coords.longitude.toFixed(4);
+          },
+          () => {
+            if (latInput) latInput.value = "12.9245";
+            if (lonInput) lonInput.value = "79.3248";
+          },
+          { timeout: 5000 }
+        );
+      }
+    }
+
+    function detectGovSignupLocation() {
+      const latInput = document.getElementById('regGovLat');
+      const lonInput = document.getElementById('regGovLon');
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            if (latInput) latInput.value = pos.coords.latitude.toFixed(4);
+            if (lonInput) lonInput.value = pos.coords.longitude.toFixed(4);
+          },
+          () => {
+            if (latInput) latInput.value = "12.9252";
+            if (lonInput) lonInput.value = "79.3318";
+          },
+          { timeout: 5000 }
+        );
+      }
+    }
+
+    let govSignupMapPickListener = null;
+    function pickFromMapForGovSignup() {
+      alert("Click anywhere on Google Maps to select your Government Surveillance Station coordinates.");
+      closeLoginModal();
+      if (googleMap) {
+        if (govSignupMapPickListener) google.maps.event.removeListener(govSignupMapPickListener);
+        govSignupMapPickListener = googleMap.addListener('click', (e) => {
+          const lat = e.latLng.lat().toFixed(4);
+          const lon = e.latLng.lng().toFixed(4);
+          openLoginModal();
+          setAuthModalMode('register');
+          setTimeout(() => {
+            const roleSelect = document.getElementById('regInputRole');
+            if (roleSelect) {
+              roleSelect.value = 'regulator';
+              onRegRoleChange();
+            }
+            const latInput = document.getElementById('regGovLat');
+            const lonInput = document.getElementById('regGovLon');
+            if (latInput) latInput.value = lat;
+            if (lonInput) lonInput.value = lon;
+          }, 150);
+          google.maps.event.removeListener(govSignupMapPickListener);
+          govSignupMapPickListener = null;
+        });
+      }
+    }
+
+    function detectSignupLocation() {
+      const latInput = document.getElementById('regNewFactoryLat');
+      const lonInput = document.getElementById('regNewFactoryLon');
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            if (latInput) latInput.value = pos.coords.latitude.toFixed(4);
+            if (lonInput) lonInput.value = pos.coords.longitude.toFixed(4);
+          },
+          () => {
+            if (latInput) latInput.value = "12.9280";
+            if (lonInput) lonInput.value = "79.3320";
+          },
+          { timeout: 5000 }
+        );
+      } else {
+        if (latInput) latInput.value = "12.9280";
+        if (lonInput) lonInput.value = "79.3320";
+      }
+    }
+
+    let signupMapPickListener = null;
+    function pickFromMapForSignup() {
+      alert("Click anywhere on Google Maps to select your industrial site coordinates.");
+      closeLoginModal();
+      if (googleMap) {
+        if (signupMapPickListener) google.maps.event.removeListener(signupMapPickListener);
+        signupMapPickListener = googleMap.addListener('click', (e) => {
+          const lat = e.latLng.lat().toFixed(4);
+          const lon = e.latLng.lng().toFixed(4);
+          openLoginModal();
+          setAuthModalMode('register');
+          setTimeout(() => {
+            const facSelect = document.getElementById('regInputFactory');
+            if (facSelect) {
+              facSelect.value = 'OTHER';
+              onRegFactoryChange();
+            }
+            const latInput = document.getElementById('regNewFactoryLat');
+            const lonInput = document.getElementById('regNewFactoryLon');
+            if (latInput) latInput.value = lat;
+            if (lonInput) lonInput.value = lon;
+          }, 150);
+          google.maps.event.removeListener(signupMapPickListener);
+          signupMapPickListener = null;
+        });
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnRegSubmit');
+      const errBox = document.getElementById('regErrorMsg');
+      const errText = document.getElementById('regErrorText');
+      const succBox = document.getElementById('regSuccessMsg');
+      const succText = document.getElementById('regSuccessText');
+
+      if (errBox) errBox.classList.add('hidden');
+      if (succBox) succBox.classList.add('hidden');
+      if (btn) btn.innerText = "Registering...";
+
+      const name = document.getElementById('regInputName')?.value.trim();
+      const email = document.getElementById('regInputEmail')?.value.trim();
+      const password = document.getElementById('regInputPassword')?.value;
+      const role = document.getElementById('regInputRole')?.value;
+      const factorySelect = document.getElementById('regInputFactory');
+      const factory_id = (role === 'industry_manager' && factorySelect) ? factorySelect.value : null;
+      let factory_name = (role === 'industry_manager' && factorySelect && factorySelect.selectedIndex >= 0) ? factorySelect.options[factorySelect.selectedIndex].text : null;
+      const industry_type = (role === 'industry_manager') ? document.getElementById('regInputIndustryType')?.value : null;
+      const designation = (role === 'regulator') ? document.getElementById('regInputDept')?.value.trim() : null;
+
+      const isOther = (role === 'industry_manager' && factory_id === 'OTHER');
+      let industry_lat = null;
+      let industry_lon = null;
+      let industry_address = null;
+      let location_lat = null;
+      let location_lon = null;
+      let location_address = null;
+
+      if (role === 'industry_manager') {
+        if (isOther) {
+          const newName = document.getElementById('regNewFactoryName')?.value.trim();
+          const latVal = document.getElementById('regNewFactoryLat')?.value;
+          const lonVal = document.getElementById('regNewFactoryLon')?.value;
+          industry_address = document.getElementById('regNewFactoryAddress')?.value.trim();
+
+          if (!newName) {
+            if (errBox && errText) {
+              errText.innerText = "Please specify the new industry / facility name.";
+              errBox.classList.remove('hidden');
+            }
+            if (btn) btn.innerText = "Submit Registration";
+            return;
+          }
+          if (!latVal || !lonVal) {
+            if (errBox && errText) {
+              errText.innerText = "Please provide exact GPS location coordinates (Latitude & Longitude) for the new industry.";
+              errBox.classList.remove('hidden');
+            }
+            if (btn) btn.innerText = "Submit Registration";
+            return;
+          }
+          factory_name = newName;
+          industry_lat = parseFloat(latVal);
+          industry_lon = parseFloat(lonVal);
+        } else {
+          const latVal = document.getElementById('regExistingFactoryLat')?.value;
+          const lonVal = document.getElementById('regExistingFactoryLon')?.value;
+          industry_address = document.getElementById('regExistingFactoryAddress')?.value.trim() || 'SIPCOT Phase II, Ranipet';
+          industry_lat = latVal ? parseFloat(latVal) : 12.9245;
+          industry_lon = lonVal ? parseFloat(lonVal) : 79.3248;
+        }
+        location_lat = industry_lat;
+        location_lon = industry_lon;
+        location_address = industry_address;
+      } else if (role === 'regulator') {
+        const govLatVal = document.getElementById('regGovLat')?.value;
+        const govLonVal = document.getElementById('regGovLon')?.value;
+        location_lat = govLatVal ? parseFloat(govLatVal) : 12.9252;
+        location_lon = govLonVal ? parseFloat(govLonVal) : 79.3318;
+        location_address = document.getElementById('regGovAddress')?.value.trim() || "TNPCB District Environmental Office, Ranipet Industrial Belt";
+      }
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            role,
+            factory_id: isOther ? 'OTHER' : factory_id,
+            factory_name,
+            industry_type,
+            designation,
+            industry_lat,
+            industry_lon,
+            industry_address,
+            location_lat,
+            location_lon,
+            location_address,
+            is_new_industry: isOther
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          if (errBox && errText) {
+            errText.innerText = data.detail || "Registration failed";
+            errBox.classList.remove('hidden');
+          }
+          return;
+        }
+
+        if (succBox && succText) {
+          succText.innerText = data.message || "Registration submitted!";
+          succBox.classList.remove('hidden');
+        }
+
+        // Prefill login email
+        const loginEmail = document.getElementById('loginInputEmail');
+        if (loginEmail) loginEmail.value = email;
+
+        // Auto switch back to login mode after 2.5 seconds
+        setTimeout(() => {
+          setAuthModalMode('login');
+        }, 2500);
+
+      } catch (err) {
+        if (errBox && errText) {
+          errText.innerText = err.message || "Network error";
+          errBox.classList.remove('hidden');
+        }
+      } finally {
+        if (btn) btn.innerText = "Submit Registration";
+      }
     }
 
     async function demoLogin(role, showAlert = true) {
@@ -2546,7 +3331,10 @@
       const tabForensicsLabel = document.getElementById('tabForensicsLabel');
       const tabHealthLabel = document.getElementById('tabHealthLabel');
 
-      // Action buttons in header
+      // Action buttons & badges in header
+      const headerEngineBadge = document.getElementById('headerEngineBadge');
+      const headerBrandIcon = document.getElementById('headerBrandIcon');
+      const backendStatusBadge = document.getElementById('backendStatusBadge');
       const btnKeyStatus = document.getElementById('btnKeyStatus');
       const btnCurfewHeader = document.getElementById('btnCurfewHeader');
       const btnUploadSatHeader = document.getElementById('btnUploadSatHeader');
@@ -2571,7 +3359,7 @@
       const role = currentUser.role;
 
       if (role === 'industry_manager') {
-        // --- 1. INDUSTRY MANAGER: STRICTLY THEIR RESPECTIVE PORTAL ONLY ---
+        // --- 1. INDUSTRY MANAGER: STRICTLY CEMS MONITORING (NO SATELLITE/BACKEND JARGON) ---
         if (roleBadge) {
           roleBadge.innerText = "INDUSTRY MGR";
           roleBadge.className = "text-[8.5px] font-black uppercase tracking-wider text-cyan-400";
@@ -2583,19 +3371,26 @@
         if (portalTabLabel) portalTabLabel.innerText = "Unit 4B CEMS Portal";
         if (portalTabIcon) portalTabIcon.setAttribute('data-lucide', 'factory');
 
-        // Hide forensics and health tabs - manager only sees their portal
-        if (tabForensicsBtn) tabForensicsBtn.classList.add('hidden');
-        if (tabHealthBtn) tabHealthBtn.classList.add('hidden');
-        if (tabPortalBtn) tabPortalBtn.classList.remove('hidden');
+        if (headerEngineBadge) {
+          headerEngineBadge.innerText = "CEMS CONTINUOUS MONITORING";
+          headerEngineBadge.className = "text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 mono font-semibold";
+        }
+        if (headerBrandIcon) headerBrandIcon.setAttribute('data-lucide', 'factory');
 
-        // Hide administrative/developer buttons
+        // Hide backend status, satellite forensics, and health tabs
+        if (backendStatusBadge) backendStatusBadge.style.display = 'none';
+        if (tabForensicsBtn) { tabForensicsBtn.classList.add('hidden'); tabForensicsBtn.style.display = 'none'; }
+        if (tabHealthBtn) { tabHealthBtn.classList.add('hidden'); tabHealthBtn.style.display = 'none'; }
+        if (tabPortalBtn) { tabPortalBtn.classList.remove('hidden'); tabPortalBtn.style.display = ''; }
+
+        // Hide administrative, satellite upload, and developer buttons
         if (btnKeyStatus) btnKeyStatus.classList.add('hidden');
         if (btnCurfewHeader) btnCurfewHeader.classList.add('hidden');
-        if (btnUploadSatHeader) btnUploadSatHeader.classList.add('hidden');
+        if (btnUploadSatHeader) { btnUploadSatHeader.classList.add('hidden'); btnUploadSatHeader.style.display = 'none'; }
         if (btnUploadLocalityHeader) btnUploadLocalityHeader.classList.add('hidden');
 
       } else if (role === 'regulator') {
-        // --- 2. GOVERNMENT / REGULATOR: STRICTLY THEIR REGULATORY DIRECTORATE ONLY ---
+        // --- 2. GOVERNMENT / REGULATOR: STRICTLY 10 KM SURVEILLANCE & ENFORCEMENT ---
         if (roleBadge) {
           roleBadge.innerText = "PCB REGULATOR";
           roleBadge.className = "text-[8.5px] font-black uppercase tracking-wider text-rose-400";
@@ -2607,19 +3402,26 @@
         if (portalTabLabel) portalTabLabel.innerText = "TNPCB Regulator Directorate";
         if (portalTabIcon) portalTabIcon.setAttribute('data-lucide', 'shield-alert');
 
-        // Hide forensics and health tabs - regulator only sees their portal
-        if (tabForensicsBtn) tabForensicsBtn.classList.add('hidden');
-        if (tabHealthBtn) tabHealthBtn.classList.add('hidden');
-        if (tabPortalBtn) tabPortalBtn.classList.remove('hidden');
+        if (headerEngineBadge) {
+          headerEngineBadge.innerText = "10 KM SURVEILLANCE & ENFORCEMENT";
+          headerEngineBadge.className = "text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 mono font-semibold";
+        }
+        if (headerBrandIcon) headerBrandIcon.setAttribute('data-lucide', 'shield-alert');
+
+        // Hide backend status, satellite forensics, and health tabs
+        if (backendStatusBadge) backendStatusBadge.style.display = 'none';
+        if (tabForensicsBtn) { tabForensicsBtn.classList.add('hidden'); tabForensicsBtn.style.display = 'none'; }
+        if (tabHealthBtn) { tabHealthBtn.classList.add('hidden'); tabHealthBtn.style.display = 'none'; }
+        if (tabPortalBtn) { tabPortalBtn.classList.remove('hidden'); tabPortalBtn.style.display = ''; }
 
         // Hide developer and external upload buttons
         if (btnKeyStatus) btnKeyStatus.classList.add('hidden');
         if (btnCurfewHeader) btnCurfewHeader.classList.add('hidden');
-        if (btnUploadSatHeader) btnUploadSatHeader.classList.add('hidden');
+        if (btnUploadSatHeader) { btnUploadSatHeader.classList.add('hidden'); btnUploadSatHeader.style.display = 'none'; }
         if (btnUploadLocalityHeader) btnUploadLocalityHeader.classList.add('hidden');
 
       } else if (role === 'citizen') {
-        // --- 3. PUBLIC / CITIZEN: POLISHED CLEAN CIVIC PORTAL ---
+        // --- 3. PUBLIC / CITIZEN: CLEAN CIVIC PORTAL ---
         if (roleBadge) {
           roleBadge.innerText = "CITIZEN";
           roleBadge.className = "text-[8.5px] font-black uppercase tracking-wider text-emerald-400";
@@ -2631,23 +3433,28 @@
         if (portalTabLabel) portalTabLabel.innerText = "Citizen Clean Air";
         if (portalTabIcon) portalTabIcon.setAttribute('data-lucide', 'users');
 
+        if (headerEngineBadge) {
+          headerEngineBadge.innerText = "COMMUNITY AIR MONITORING";
+          headerEngineBadge.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mono font-semibold";
+        }
+        if (headerBrandIcon) headerBrandIcon.setAttribute('data-lucide', 'activity');
+
         // Polished civic labels
         if (tabForensicsLabel) tabForensicsLabel.innerText = "Pollution Map";
         if (tabHealthLabel) tabHealthLabel.innerText = "Health Monitor";
 
-        // Show all 3 public tabs
-        if (tabForensicsBtn) tabForensicsBtn.classList.remove('hidden');
-        if (tabHealthBtn) tabHealthBtn.classList.remove('hidden');
-        if (tabPortalBtn) tabPortalBtn.classList.remove('hidden');
+        if (backendStatusBadge) backendStatusBadge.style.display = 'none';
+        if (tabForensicsBtn) { tabForensicsBtn.classList.remove('hidden'); tabForensicsBtn.style.display = ''; }
+        if (tabHealthBtn) { tabHealthBtn.classList.remove('hidden'); tabHealthBtn.style.display = ''; }
+        if (tabPortalBtn) { tabPortalBtn.classList.remove('hidden'); tabPortalBtn.style.display = ''; }
 
-        // Hide internal developer/operator buttons
         if (btnKeyStatus) btnKeyStatus.classList.add('hidden');
         if (btnCurfewHeader) btnCurfewHeader.classList.add('hidden');
-        if (btnUploadSatHeader) btnUploadSatHeader.classList.add('hidden');
+        if (btnUploadSatHeader) { btnUploadSatHeader.classList.add('hidden'); btnUploadSatHeader.style.display = 'none'; }
         if (btnUploadLocalityHeader) btnUploadLocalityHeader.classList.add('hidden');
 
       } else if (role === 'super_admin') {
-        // --- 4. SUPER ADMIN: POLISHED FULL GOVERNANCE MATRIX ---
+        // --- 4. SUPER ADMIN: FULL GOVERNANCE MATRIX ---
         if (roleBadge) {
           roleBadge.innerText = "SUPER ADMIN";
           roleBadge.className = "text-[8.5px] font-black uppercase tracking-wider text-amber-400";
@@ -2659,19 +3466,23 @@
         if (portalTabLabel) portalTabLabel.innerText = "Admin Console";
         if (portalTabIcon) portalTabIcon.setAttribute('data-lucide', 'shield');
 
-        // Standard forensics and health labels
+        if (headerEngineBadge) {
+          headerEngineBadge.innerText = "TROPOMI-S5P INVERSE ENGINE";
+          headerEngineBadge.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mono font-semibold";
+        }
+        if (headerBrandIcon) headerBrandIcon.setAttribute('data-lucide', 'satellite');
+
         if (tabForensicsLabel) tabForensicsLabel.innerText = "Satellite Forensics";
         if (tabHealthLabel) tabHealthLabel.innerText = "Environmental Health";
 
-        // Show all tabs
-        if (tabForensicsBtn) tabForensicsBtn.classList.remove('hidden');
-        if (tabHealthBtn) tabHealthBtn.classList.remove('hidden');
-        if (tabPortalBtn) tabPortalBtn.classList.remove('hidden');
+        if (backendStatusBadge) backendStatusBadge.style.display = '';
+        if (tabForensicsBtn) { tabForensicsBtn.classList.remove('hidden'); tabForensicsBtn.style.display = ''; }
+        if (tabHealthBtn) { tabHealthBtn.classList.remove('hidden'); tabHealthBtn.style.display = ''; }
+        if (tabPortalBtn) { tabPortalBtn.classList.remove('hidden'); tabPortalBtn.style.display = ''; }
 
-        // Show all admin & developer tools
         if (btnKeyStatus) btnKeyStatus.classList.remove('hidden');
         if (btnCurfewHeader) btnCurfewHeader.classList.remove('hidden');
-        if (btnUploadSatHeader) btnUploadSatHeader.classList.remove('hidden');
+        if (btnUploadSatHeader) { btnUploadSatHeader.classList.remove('hidden'); btnUploadSatHeader.style.display = ''; }
         if (btnUploadLocalityHeader) btnUploadLocalityHeader.classList.remove('hidden');
       }
 
@@ -2679,13 +3490,16 @@
     }
 
     // View Switching Logic (Forensics, Health, Role Portal)
-    function switchView(viewName) {
+    function switchView(viewName, allowMap = false) {
       const forensicsView = document.getElementById('forensicsView');
       const healthView = document.getElementById('healthView');
       const portalView = document.getElementById('portalView');
       const tabForensicsBtn = document.getElementById('tabForensicsBtn');
       const tabHealthBtn = document.getElementById('tabHealthBtn');
       const tabPortalBtn = document.getElementById('tabPortalBtn');
+      const forensicsSidebar = document.getElementById('forensicsSidebar');
+      const btnReturnToPortal = document.getElementById('btnReturnToPortal');
+      const btnReturnToPortalText = document.getElementById('btnReturnToPortalText');
 
       // Sub portals
       const portalSuperAdmin = document.getElementById('portalSuperAdmin');
@@ -2693,15 +3507,31 @@
       const portalRegulator = document.getElementById('portalRegulator');
       const portalPublic = document.getElementById('portalPublic');
 
-      // Lock Industry Manager & Regulator strictly to their respective portal
+      // Lock Industry Manager & Regulator strictly to their respective portal, unless allowMap is requested
       if (currentUser && (currentUser.role === 'industry_manager' || currentUser.role === 'regulator')) {
-        viewName = 'portal';
+        if (viewName === 'forensics' && allowMap) {
+          // Allow viewing the Google Map without satellite sidebar, showing Return to Portal
+          if (forensicsSidebar) forensicsSidebar.style.display = 'none';
+          if (btnReturnToPortal) {
+            btnReturnToPortal.classList.remove('hidden');
+            if (btnReturnToPortalText) {
+              btnReturnToPortalText.innerText = currentUser.role === 'regulator' ? 'Return to Regulator Directorate' : 'Return to CEMS Portal';
+            }
+          }
+        } else {
+          viewName = 'portal';
+        }
       }
 
       if (viewName === 'forensics') {
         forensicsView.classList.remove('hidden');
         healthView.classList.add('hidden');
         portalView.classList.add('hidden');
+
+        if (currentUser && currentUser.role === 'super_admin') {
+          if (forensicsSidebar) forensicsSidebar.style.display = '';
+          if (btnReturnToPortal) btnReturnToPortal.classList.add('hidden');
+        }
 
         tabForensicsBtn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-md flex items-center space-x-1.5 transition bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
         tabHealthBtn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-md flex items-center space-x-1.5 transition text-slate-400 hover:text-slate-200";
@@ -2725,6 +3555,9 @@
         forensicsView.classList.add('hidden');
         healthView.classList.add('hidden');
         portalView.classList.remove('hidden');
+
+        if (forensicsSidebar) forensicsSidebar.style.display = '';
+        if (btnReturnToPortal) btnReturnToPortal.classList.add('hidden');
 
         tabForensicsBtn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-md flex items-center space-x-1.5 transition text-slate-400 hover:text-slate-200";
         tabHealthBtn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-md flex items-center space-x-1.5 transition text-slate-400 hover:text-slate-200";
@@ -2823,6 +3656,7 @@
       await Promise.all([
         loadAdminUsers(),
         loadAdminSettings(),
+        loadAdminGovernmentLogs(),
         loadAdminAuditLogs(),
         loadAdminOverrides()
       ]);
@@ -2835,7 +3669,18 @@
         const data = await res.json();
         const tbody = document.getElementById('adminUserTableBody');
         const countEl = document.getElementById('adminUserCount');
+        const pendingBadge = document.getElementById('adminPendingBadge');
         if (countEl) countEl.innerText = data.total;
+
+        const pendingUsers = (data.users || []).filter(u => u.status === 'pending');
+        if (pendingBadge) {
+          if (pendingUsers.length > 0) {
+            pendingBadge.innerText = `${pendingUsers.length} Pending Approval`;
+            pendingBadge.classList.remove('hidden');
+          } else {
+            pendingBadge.classList.add('hidden');
+          }
+        }
 
         if (!tbody) return;
         tbody.innerHTML = '';
@@ -2850,19 +3695,71 @@
           else if (u.role === 'citizen') badgeColor = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
 
           const isProtected = (u.email === 'admin@plume.ai');
-          const scopeText = u.factory_name ? `${u.factory_name} (${u.factory_id})` : (u.factory_id || 'System-Wide');
+          let scopeText = u.factory_name ? `${u.factory_name} (${u.factory_id || 'Pending Reg'})` : (u.designation || u.factory_id || 'System-Wide');
+          if (u.is_new_industry && u.industry_lat && u.industry_lon) {
+            scopeText += ` <button type="button" onclick="panToGoogleMap(${u.industry_lat}, ${u.industry_lon}, '${(u.factory_name || u.name).replace(/'/g, "\\'")}')" class="text-cyan-400 hover:underline font-mono text-[10px] ml-1">📍 ${Number(u.industry_lat).toFixed(4)}, ${Number(u.industry_lon).toFixed(4)}</button>`;
+          }
+          if (u.industry_type) {
+            scopeText += ` • ${u.industry_type}`;
+          }
+
+          let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">APPROVED</span>';
+          if (u.status === 'pending') {
+            if (u.is_new_industry) {
+              if (u.gov_verified && !u.admin_verified) {
+                statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">🛡️ GOV OK | ADMIN PENDING</span>';
+              } else if (!u.gov_verified && u.admin_verified) {
+                statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">⏳ AWAITING GOV PCB</span>';
+              } else {
+                statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">⏳ DUAL PENDING (GOV & ADMIN)</span>';
+              }
+            } else {
+              statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">PENDING</span>';
+            }
+          } else if (u.status === 'rejected') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-500/20 text-red-300 border border-red-500/40">REJECTED</span>';
+          } else if (u.is_new_industry && u.status === 'approved') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">✅ DUAL APPROVED & MAPPED</span>';
+          }
+
+          let actionButtons = '';
+          if (u.status === 'pending') {
+            actionButtons = `
+              <button onclick="approveAdminUser('${u.id}', '${u.name}')" class="text-emerald-400 hover:text-emerald-300 font-bold px-2 py-1 rounded bg-emerald-950/60 border border-emerald-500/40 text-[11px] mr-1.5 transition">
+                <i data-lucide="check" class="w-3 h-3 inline"></i> ${u.is_new_industry ? 'Approve (Admin)' : 'Approve'}
+              </button>
+              <button onclick="rejectAdminUser('${u.id}', '${u.name}')" class="text-rose-400 hover:text-rose-300 font-bold px-2 py-1 rounded bg-rose-950/60 border border-rose-500/40 text-[11px] mr-1.5 transition">
+                <i data-lucide="x" class="w-3 h-3 inline"></i> Reject
+              </button>
+            `;
+          }
+
+          if (u.is_new_industry && u.industry_lat && u.industry_lon) {
+            actionButtons += `
+              <button onclick="panToGoogleMap(${u.industry_lat}, ${u.industry_lon}, '${(u.factory_name || u.name).replace(/'/g, "\\'")}')" class="text-cyan-400 hover:text-cyan-300 px-2 py-1 rounded hover:bg-cyan-950/40 border border-cyan-500/30 text-[11px] mr-1.5 transition" title="View on Google Maps">
+                📍 Map
+              </button>
+            `;
+          }
+
+          if (!isProtected) {
+            actionButtons += `
+              <button onclick="deleteAdminUser('${u.id}', '${u.name}')" class="text-slate-400 hover:text-rose-300 px-2 py-1 rounded hover:bg-rose-950/40 text-[11px] transition">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5 inline"></i>
+              </button>
+            `;
+          } else {
+            actionButtons = '<span class="text-[10px] text-slate-600 font-mono">Protected</span>';
+          }
 
           tr.innerHTML = `
             <td class="p-2.5 font-bold text-slate-200">${u.name}</td>
             <td class="p-2.5 mono text-slate-400">${u.email}</td>
             <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${badgeColor}">${u.role}</span></td>
+            <td class="p-2.5">${statusBadge}</td>
             <td class="p-2.5 text-slate-400 truncate max-w-xs">${scopeText}</td>
-            <td class="p-2.5 text-right">
-              ${isProtected ? '<span class="text-[10px] text-slate-600 font-mono">Protected</span>' : `
-                <button onclick="deleteAdminUser('${u.id}', '${u.name}')" class="text-rose-400 hover:text-rose-300 px-2 py-1 rounded hover:bg-rose-950/40 text-[11px] transition">
-                  <i data-lucide="trash-2" class="w-3.5 h-3.5 inline"></i> Delete
-                </button>
-              `}
+            <td class="p-2.5 text-right whitespace-nowrap">
+              ${actionButtons}
             </td>
           `;
           tbody.appendChild(tr);
@@ -2951,6 +3848,59 @@
       }
     }
 
+    function updateLiveClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const el = document.getElementById('liveClockText');
+      if (el) el.innerText = `${dateStr}, ${timeStr} IST`;
+    }
+
+    function formatLiveTiming(timestamp) {
+      if (!timestamp) return '--:--:--';
+      const d = new Date(timestamp);
+      const time = d.toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const date = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+      const diffSec = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+      let rel = "just now";
+      if (diffSec >= 60 && diffSec < 3600) rel = `${Math.floor(diffSec / 60)}m ago`;
+      else if (diffSec >= 3600 && diffSec < 86400) rel = `${Math.floor(diffSec / 3600)}h ago`;
+      else if (diffSec >= 86400) rel = `${Math.floor(diffSec / 86400)}d ago`;
+
+      return `<span>${date} ${time}</span> <span class="text-[9px] text-cyan-400 font-sans block">(${rel})</span>`;
+    }
+
+    async function loadAdminGovernmentLogs() {
+      try {
+        const res = await authFetch('/api/admin/government-logs');
+        if (!res || !res.ok) return;
+        const data = await res.json();
+        const tbody = document.getElementById('adminGovLogBody');
+        const countBadge = document.getElementById('adminGovLogsCount');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const logs = data.logs || [];
+        if (countBadge) countBadge.innerText = `${logs.length} Events`;
+        if (logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500 text-xs">No government regulator actions recorded yet.</td></tr>';
+          return;
+        }
+        logs.slice(0, 30).forEach(log => {
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-800/40 transition";
+          tr.innerHTML = `
+            <td class="p-2.5 text-slate-400 font-mono text-[10px] whitespace-nowrap">${formatLiveTiming(log.timestamp)}</td>
+            <td class="p-2.5 font-bold text-rose-300 whitespace-nowrap">${log.user_name || 'Government Officer'}</td>
+            <td class="p-2.5 whitespace-nowrap"><span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono text-[10px] font-bold">${log.action}</span></td>
+            <td class="p-2.5 text-slate-300 font-sans text-xs">${log.details || ''}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error("loadAdminGovernmentLogs failed:", e);
+      }
+    }
+
     async function loadAdminAuditLogs() {
       try {
         const res = await authFetch('/api/admin/logs');
@@ -2963,7 +3913,7 @@
           const tr = document.createElement('tr');
           tr.className = "hover:bg-slate-800/40 transition";
           tr.innerHTML = `
-            <td class="p-2.5 text-slate-400 font-mono">${log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : ''}</td>
+            <td class="p-2.5 text-slate-400 font-mono text-[10px] whitespace-nowrap">${formatLiveTiming(log.timestamp)}</td>
             <td class="p-2.5 font-bold text-slate-300">${log.user_name}</td>
             <td class="p-2.5 uppercase font-mono text-[10px] text-amber-300">${log.role}</td>
             <td class="p-2.5 font-mono text-cyan-400 font-bold">${log.action}</td>
@@ -3089,6 +4039,63 @@
       }
     }
 
+    function panToGoogleMap(lat, lon, title = '') {
+      if (lat == null || lon == null) return;
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lon);
+      if (isNaN(latitude) || isNaN(longitude)) return;
+
+      switchView('forensics');
+      if (activeEngine === 'google' && googleMap) {
+        googleMap.panTo({ lat: latitude, lng: longitude });
+        googleMap.setZoom(16.5);
+      } else if (maplibreMap) {
+        maplibreMap.flyTo({ center: [longitude, latitude], zoom: 15.5 });
+      }
+    }
+
+    async function approveAdminUser(userId, userName) {
+      if (!confirm(`Authorize and approve registration for "${userName}"?`)) return;
+      try {
+        const res = await authFetch(`/api/admin/users/${userId}/approve`, { method: 'POST' });
+        if (res && res.ok) {
+          const data = await res.json();
+          if (data.dual_verified) {
+            alert(`🎉 DUAL VERIFICATION COMPLETE!\n\n"${userName}" and facility authorized by both Government PCB and Admin.\nAdded directly to Google Maps!`);
+            await fetchFactories();
+            if (data.factory && data.factory.geometry) {
+              const coords = data.factory.geometry.coordinates;
+              panToGoogleMap(coords[1], coords[0], userName);
+            }
+          } else {
+            alert(data.message || `Access approved for ${userName}.`);
+          }
+          loadAdminUsers();
+        } else {
+          const err = await res.json();
+          alert("Approval failed: " + (err.detail || "Request failed"));
+        }
+      } catch (e) {
+        alert("Network error: " + e.message);
+      }
+    }
+
+    async function rejectAdminUser(userId, userName) {
+      if (!confirm(`Reject registration for "${userName}"?`)) return;
+      try {
+        const res = await authFetch(`/api/admin/users/${userId}/reject`, { method: 'POST' });
+        if (res && res.ok) {
+          alert(`Registration rejected for ${userName}.`);
+          loadAdminUsers();
+        } else {
+          const err = await res.json();
+          alert("Rejection failed: " + (err.detail || "Request failed"));
+        }
+      } catch (e) {
+        alert("Network error: " + e.message);
+      }
+    }
+
     // --- 2. INDUSTRY MANAGER PORTAL LOGIC ---
     async function loadManagerPortalData() {
       try {
@@ -3153,7 +4160,7 @@
                 el.className = "bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs flex justify-between";
                 el.innerHTML = `
                   <div>
-                    <div class="font-bold text-slate-300">${v.time_stamp ? new Date(v.time_stamp).toLocaleTimeString() : 'Statutory Exceedance'}</div>
+                    <div class="font-bold text-slate-300">${v.time_stamp ? (new Date(v.time_stamp).toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit' }) + ' IST') : 'Statutory Exceedance'}</div>
                     <div class="text-[11px] text-slate-500">${v.pollutant || 'SO2'} - ${v.concentration_ugm3 || 45} µg/m³</div>
                   </div>
                   <div class="text-right">
@@ -3216,22 +4223,443 @@
     // --- 3. REGULATOR PORTAL LOGIC ---
     let regulatorPlumesData = [];
     let regulatorCurrentFilter = 'all';
+    // ponytail: variable surveillance radius (0 to 20 km) with 350ms debounce
+    let govCurrentRadiusKm = 10.0;
+    let _govRadiusDebounce = null;
+
+    function onGovRadiusSliderChange(val) {
+      govCurrentRadiusKm = Math.max(0.0, Math.min(20.0, parseFloat(val) || 0.0));
+      const rStr = govCurrentRadiusKm.toFixed(1) + ' KM';
+      const disp = document.getElementById('govRadiusDisplay');
+      const kpi = document.getElementById('govRadiusKpiDisplay');
+      const headerTitle = document.getElementById('govPerimeterHeaderTitle');
+      const listTitle = document.getElementById('govPerimeterListTitle');
+      const subText = document.getElementById('govStationRadiusSubText');
+      const btnMap = document.getElementById('govMapBtnText');
+      const btnScan = document.getElementById('govRefreshBtnText');
+
+      if (disp) disp.innerText = rStr;
+      if (kpi) kpi.innerText = rStr;
+      if (headerTitle) headerTitle.innerText = `${rStr} REGULATORY SURVEILLANCE PERIMETER`;
+      if (listTitle) listTitle.innerText = `EXCEEDING INDUSTRIAL FACILITIES IDENTIFIED WITHIN ${rStr}`;
+      if (subText) subText.innerText = `${rStr.toLowerCase()}`;
+      if (btnMap) btnMap.innerText = `View ${rStr} on Google Map`;
+      if (btnScan) btnScan.innerText = `Refresh ${rStr} Scan`;
+
+      clearTimeout(_govRadiusDebounce);
+      _govRadiusDebounce = setTimeout(() => {
+        triggerGovPerimeterScan();
+      }, 350);
+    }
 
     async function loadRegulatorPortalData() {
-      try {
-        // Poll real-time OpenWeather atmospheric sounder to detect new live data
-        await fetch('/api/so2-radius?lat=12.928&lon=79.330&radius_km=3.0');
-      } catch (e) {
-        console.warn("Live atmospheric sounder sync note:", e);
-      }
       await Promise.all([
-        fetchRegulatorPlumes(),
+        triggerGovPerimeterScan(),
         fetchRegulatorNotices(),
-        fetchNightViolations()
+        fetchNightViolations(),
+        fetchPendingIndustriesForRegulator(),
+        fetchRegulatorAdminLogs()
       ]);
       const syncTimeEl = document.getElementById('regLastSyncTime');
       if (syncTimeEl) {
-        syncTimeEl.innerText = new Date().toLocaleTimeString();
+        syncTimeEl.innerText = new Date().toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST';
+      }
+    }
+
+    // --- REGULATORY SURVEILLANCE PERIMETER LOGIC (0 to 20 KM DYNAMIC) ---
+    async function triggerGovPerimeterScan() {
+      const govLat = (currentUser && currentUser.location_lat != null) ? Number(currentUser.location_lat) : 12.9252;
+      const govLon = (currentUser && currentUser.location_lon != null) ? Number(currentUser.location_lon) : 79.3318;
+      const govName = (currentUser && currentUser.location_address) ? currentUser.location_address : (currentUser?.designation || "TNPCB District Environmental Office");
+
+      const nameEl = document.getElementById('govStationNameDisplay');
+      const coordsEl = document.getElementById('govStationCoordsDisplay');
+      if (nameEl) nameEl.innerText = govName;
+      if (coordsEl) coordsEl.innerText = `${govLat.toFixed(4)}°N, ${govLon.toFixed(4)}°E`;
+
+      const listEl = document.getElementById('govPerimeterIndustriesList');
+      const totEl = document.getElementById('govPerimeterTotalCount');
+      const excEl = document.getElementById('govPerimeterExceedCount');
+      const fineEl = document.getElementById('govPerimeterTotalFine');
+      const timeEl = document.getElementById('govPerimeterTimestamp');
+
+      const rKm = (govCurrentRadiusKm !== undefined && govCurrentRadiusKm !== null) ? Number(govCurrentRadiusKm) : 10.0;
+      const rStr = rKm.toFixed(1) + ' KM';
+
+      if (listEl) {
+        listEl.innerHTML = `<div class="col-span-full py-8 text-center text-slate-400 text-xs font-mono"><span class="animate-spin inline-block mr-2">⚡</span>Executing ${rStr} radial OpenWeather atmospheric sounding scan...</div>`;
+      }
+
+      try {
+        const queryRadius = Math.max(0.5, rKm);
+        const res = await fetch(`/api/so2-radius?lat=${govLat}&lon=${govLon}&radius_km=${queryRadius}`);
+        if (!res.ok) throw new Error("Perimeter scan request failed");
+        const data = await res.json();
+        govPerimeterData = data;
+
+        const exceeding = data.exceeding_industries || [];
+        if (totEl) totEl.innerText = data.samples_count ? `${Math.max(6, data.samples_count)} Units` : '6 Units';
+        if (excEl) excEl.innerText = `${exceeding.length} Exceedances`;
+
+        const totalFine = exceeding.reduce((acc, item) => acc + (item.fine_inr || 0), 0);
+        if (fineEl) fineEl.innerText = '₹ ' + totalFine.toLocaleString('en-IN');
+        if (timeEl) timeEl.innerText = 'Live Sounding • ' + new Date().toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST';
+
+        if (!listEl) return;
+        listEl.innerHTML = '';
+
+        if (exceeding.length === 0) {
+          listEl.innerHTML = `<div class="col-span-full py-6 text-center text-emerald-400 text-xs bg-slate-950/60 rounded-xl border border-slate-800">✅ All monitored facilities within ${rStr} are currently operating within statutory CPCB limits.</div>`;
+          return;
+        }
+
+        exceeding.forEach(ind => {
+          const card = document.createElement('div');
+          card.className = "bg-slate-950/80 border border-rose-500/40 rounded-xl p-3.5 flex flex-col justify-between space-y-3 hover:border-rose-400 transition shadow-lg";
+
+          const fineLakhs = (ind.fine_inr / 100000).toFixed(1);
+          card.innerHTML = `
+            <div>
+              <div class="flex justify-between items-start gap-1">
+                <div>
+                  <h4 class="font-black text-slate-100 text-xs flex items-center space-x-1">
+                    <span>🚨</span>
+                    <span>${ind.name}</span>
+                  </h4>
+                  <span class="text-[10px] text-rose-400 font-semibold">${ind.category}</span>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono font-bold whitespace-nowrap">
+                  ₹ ${fineLakhs}L Fine
+                </span>
+              </div>
+
+              <div class="text-[10px] text-slate-400 mt-2.5 space-y-1 bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+                <div class="flex justify-between">
+                  <span>Provided Location:</span>
+                  <span class="mono text-slate-200">${ind.lat.toFixed(4)}°N, ${ind.lon.toFixed(4)}°E</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Distance from Station:</span>
+                  <span class="mono text-cyan-300 font-bold">${ind.distance_km} km away</span>
+                </div>
+                <div class="flex justify-between items-center pt-1 border-t border-slate-800">
+                  <span>OpenWeather Live SO2:</span>
+                  <span class="mono text-rose-400 font-bold text-[11px]">${ind.so2_ugm3} µg/m³ <span class="text-[9px] text-slate-500">(Limit 20)</span></span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span>Statutory Penalty:</span>
+                  <span class="mono text-amber-300 font-extrabold text-[11px]">₹ ${ind.fine_inr.toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2 pt-2 border-t border-slate-800/80">
+              <button onclick="prefillStatutoryNotice('${ind.factory_id}', ${ind.fine_inr}, '${(ind.name || '').replace(/'/g, "\\'")}', ${ind.so2_ugm3})" class="flex-1 py-1.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-[11px] rounded-lg shadow transition flex items-center justify-center space-x-1">
+                <i data-lucide="file-warning" class="w-3.5 h-3.5 inline"></i>
+                <span>Draft Statutory Notice</span>
+              </button>
+              <button onclick="panToGoogleMap(${ind.lat}, ${ind.lon}, '${(ind.name || '').replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 text-[11px] font-bold rounded-lg border border-slate-700 transition" title="Locate on Google Maps">
+                📍 Map
+              </button>
+            </div>
+          `;
+          listEl.appendChild(card);
+        });
+
+        if (window.lucide) lucide.createIcons();
+      } catch (err) {
+        console.error("triggerGovPerimeterScan failed:", err);
+        if (listEl) listEl.innerHTML = `<div class="col-span-full py-4 text-center text-rose-400 text-xs">Error scanning ${rStr} perimeter: ${err.message}</div>`;
+      }
+    }
+
+    function prefillStatutoryNotice(factoryId, fineInr, factoryName, so2Ugm3) {
+      const targetSelect = document.getElementById('regNoticeTarget');
+      const fineInput = document.getElementById('regNoticeFine');
+      const evidInput = document.getElementById('regNoticeEvidence');
+      if (targetSelect) {
+        let found = false;
+        for (let i = 0; i < targetSelect.options.length; i++) {
+          if (targetSelect.options[i].value === factoryId) {
+            targetSelect.selectedIndex = i;
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          const opt = document.createElement('option');
+          opt.value = factoryId;
+          opt.innerText = `${factoryName} (${factoryId})`;
+          targetSelect.appendChild(opt);
+          targetSelect.value = factoryId;
+        }
+      }
+      if (fineInput) fineInput.value = fineInr;
+      if (evidInput) {
+        const rKm = (govCurrentRadiusKm !== undefined && govCurrentRadiusKm !== null) ? Number(govCurrentRadiusKm) : 10.0;
+        evidInput.value = `OpenWeather real-time atmospheric sounding within ${rKm.toFixed(1)} km Government Surveillance Perimeter detected SO2 level of ${so2Ugm3} µg/m³, exceeding statutory CPCB threshold (20 µg/m³). Assessed statutory compensation fine: ₹${fineInr.toLocaleString('en-IN')}.`;
+      }
+      const issuerCard = document.getElementById('regNoticeTarget')?.closest('.bg-slate-900\\/80');
+      if (issuerCard) {
+        issuerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    async function viewGovPerimeterOnMap() {
+      const govLat = (currentUser && currentUser.location_lat != null) ? Number(currentUser.location_lat) : 12.9252;
+      const govLon = (currentUser && currentUser.location_lon != null) ? Number(currentUser.location_lon) : 79.3318;
+      const govName = (currentUser && currentUser.location_address) ? currentUser.location_address : (currentUser?.designation || "TNPCB District Environmental Office");
+
+      switchView('forensics', true);
+      if (activeEngine !== 'google') {
+        await switchMapEngine('google');
+      }
+      if (!govPerimeterData) {
+        await triggerGovPerimeterScan();
+      }
+      renderGovPerimeterOnGoogleMap(govPerimeterData, govLat, govLon, govName);
+    }
+
+    async function renderGovPerimeterOnGoogleMap(data, govLat, govLon, govName) {
+      if (!googleMap) return;
+
+      clearGoogleLayers(gMapPerimeterLayers);
+      gMapPerimeterLayers = [];
+
+      try {
+        // ponytail: dynamic surveillance perimeter circle matching current slider radius
+        const rKm = (govCurrentRadiusKm !== undefined && govCurrentRadiusKm !== null) ? Number(govCurrentRadiusKm) : 10.0;
+        const radiusMeters = Math.max(200, rKm * 1000);
+
+        // 1. Draw dynamic km Circle Overlay
+        const perimeterCircle = new google.maps.Circle({
+          strokeColor: "#f43f5e",
+          strokeOpacity: 0.9,
+          strokeWeight: 2.5,
+          fillColor: "#e11d48",
+          fillOpacity: 0.08,
+          map: googleMap,
+          center: { lat: govLat, lng: govLon },
+          radius: radiusMeters,
+          zIndex: 6
+        });
+        gMapPerimeterLayers.push(perimeterCircle);
+
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+        // 2. Add Government HQ Marker
+        const stationEl = document.createElement("div");
+        stationEl.className = "flex items-center space-x-1.5 bg-rose-950/95 border-2 border-rose-500 text-rose-200 px-3 py-1.5 rounded-full shadow-2xl text-xs font-black cursor-pointer transform hover:scale-110 transition whitespace-nowrap";
+        stationEl.innerHTML = `<span>🏛️</span><span>${govName || 'TNPCB Station HQ'} (${rKm.toFixed(1)} KM Surveillance Hub)</span>`;
+
+        const stationMarker = new AdvancedMarkerElement({
+          map: googleMap,
+          position: { lat: govLat, lng: govLon },
+          content: stationEl,
+          title: `${govName} (${rKm.toFixed(1)} km Surveillance Center)`
+        });
+        stationMarker.addListener("click", () => {
+          gMapInfoWindow.setContent(`
+            <div style="color: #0f172a; font-family: sans-serif; padding: 6px; max-width: 270px;">
+              <div style="font-weight: 900; font-size: 13px; color: #e11d48;">🏛️ ${govName}</div>
+              <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Station Location: ${govLat.toFixed(4)}°N, ${govLon.toFixed(4)}°E</div>
+              <div style="margin-top: 6px; font-size: 11px; background: #fff1f2; padding: 6px; border-radius: 6px;">
+                <div>📡 <strong>Surveillance Radius:</strong> ${rKm.toFixed(1)} KM Radial Sweep</div>
+                <div>🚨 <strong>Exceeding Industries Detected:</strong> ${data ? data.exceeding_count : 0} facilities</div>
+              </div>
+            </div>
+          `);
+          gMapInfoWindow.setPosition({ lat: govLat, lng: govLon });
+          gMapInfoWindow.open(googleMap);
+        });
+        gMapPerimeterLayers.push(stationMarker);
+
+        // 3. Add Exceeding Industries Tagged with Fine & Location
+        const exceeding = (data && data.exceeding_industries) ? data.exceeding_industries : [];
+        exceeding.forEach(ind => {
+          const indEl = document.createElement("div");
+          indEl.className = "flex flex-col items-center cursor-pointer pointer-events-auto select-none transform hover:scale-110 transition";
+          const fineLakhs = (ind.fine_inr / 100000).toFixed(1);
+          indEl.innerHTML = `
+            <div class="bg-rose-950/95 border-2 border-rose-500 text-white rounded-lg px-2.5 py-1 shadow-2xl backdrop-blur flex items-center space-x-1.5 whitespace-nowrap mb-0.5">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping inline-block"></span>
+              <span class="text-xs font-black text-rose-200">🚨 ${ind.name}</span>
+              <span class="text-[10px] bg-rose-600 text-white font-black px-1.5 py-0.5 rounded font-mono">Fine: ₹${fineLakhs}L</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-lg flex items-center justify-center text-[10px] font-bold text-white">
+                ⚠️
+              </div>
+              <div class="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[6px] border-t-rose-600 -mt-[1px]"></div>
+            </div>
+          `;
+
+          const indMarker = new AdvancedMarkerElement({
+            map: googleMap,
+            position: { lat: ind.lat, lng: ind.lon },
+            content: indEl,
+            title: `${ind.name} - Assessed Fine: ₹${ind.fine_inr.toLocaleString('en-IN')}`
+          });
+
+          indMarker.addListener("click", () => {
+            gMapInfoWindow.setContent(`
+              <div style="color: #0f172a; font-family: sans-serif; padding: 6px; max-width: 280px;">
+                <div style="font-weight: 800; font-size: 13px; color: #dc2626; display: flex; align-items: center; justify-content: space-between;">
+                  <span>🚨 STATUTORY EXCEEDANCE</span>
+                  <span style="font-size: 10px; background: #ffe4e6; color: #e11d48; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${rKm.toFixed(1)} KM ZONE</span>
+                </div>
+                <div style="font-weight: 800; font-size: 12px; margin-top: 4px; color: #0f172a;">${ind.name}</div>
+                <div style="font-size: 10px; color: #64748b; margin-top: 2px;">📍 Provided Location: ${ind.lat.toFixed(4)}°N, ${ind.lon.toFixed(4)}°E (${ind.distance_km} km from Govt HQ)</div>
+                <div style="margin-top: 6px; font-size: 11px; background: #fff1f2; padding: 6px; border-radius: 6px; border: 1px solid #fecdd3;">
+                  <div>💨 <strong>OpenWeather SO2:</strong> <span style="color: #dc2626; font-weight: bold;">${ind.so2_ugm3} µg/m³</span> (CPCB Limit: 20 µg/m³)</div>
+                  <div>⚖️ <strong>Statutory Fine:</strong> <span style="color: #b91c1c; font-weight: 900; font-size: 12px;">₹${ind.fine_inr.toLocaleString('en-IN')}</span></div>
+                </div>
+                <button onclick="switchView('portal'); prefillStatutoryNotice('${ind.factory_id}', ${ind.fine_inr}, '${(ind.name || '').replace(/'/g, "\\'")}', ${ind.so2_ugm3})" style="margin-top: 8px; width: 100%; padding: 6px; background: #e11d48; color: #fff; border: none; border-radius: 6px; font-weight: bold; font-size: 11px; cursor: pointer;">
+                  ⚖️ Draft Statutory Show-Cause Notice
+                </button>
+              </div>
+            `);
+            gMapInfoWindow.setPosition({ lat: ind.lat, lng: ind.lon });
+            gMapInfoWindow.open(googleMap);
+          });
+          gMapPerimeterLayers.push(indMarker);
+        });
+
+        // 4. Center and fit view on the perimeter with dynamic zoom
+        googleMap.panTo({ lat: govLat, lng: govLon });
+        googleMap.setZoom(rKm <= 3 ? 14 : (rKm <= 8 ? 13 : (rKm <= 15 ? 12 : 11)));
+
+      } catch (err) {
+        console.warn("renderGovPerimeterOnGoogleMap error:", err);
+      }
+    }
+
+    async function fetchPendingIndustriesForRegulator() {
+      try {
+        const res = await authFetch('/api/regulator/pending-industries');
+        if (!res || !res.ok) return;
+        const data = await res.json();
+        const pending = data.pending || [];
+        const section = document.getElementById('regulatorPendingIndustriesSection');
+        const badge = document.getElementById('regPendingCountBadge');
+        const list = document.getElementById('regulatorPendingIndustriesList');
+
+        if (!section || !list) return;
+
+        if (pending.length > 0) {
+          section.classList.remove('hidden');
+          if (badge) badge.innerText = `${pending.length} Pending`;
+          list.innerHTML = '';
+          pending.forEach(u => {
+            const card = document.createElement('div');
+            card.className = "bg-slate-950/80 border border-cyan-500/30 rounded-xl p-3.5 flex flex-col justify-between space-y-3 hover:border-cyan-400/60 transition";
+
+            const coordsText = (u.industry_lat && u.industry_lon) ? `${Number(u.industry_lat).toFixed(4)}°N, ${Number(u.industry_lon).toFixed(4)}°E` : 'Coordinates Pending';
+            const govStatus = u.gov_verified
+              ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">✅ Gov Endorsed</span>'
+              : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">⏳ Awaiting Gov</span>';
+            const adminStatus = u.admin_verified
+              ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">✅ Admin OK</span>'
+              : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">⏳ Pending Admin</span>';
+
+            card.innerHTML = `
+              <div>
+                <div class="flex justify-between items-start">
+                  <h4 class="font-black text-slate-100 text-xs">🏭 ${u.factory_name || u.name}</h4>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono">Air Act §21</span>
+                </div>
+                <div class="text-[11px] text-cyan-400 font-semibold mt-1">${u.industry_type || 'Industrial Unit'}</div>
+                <div class="text-[10px] text-slate-400 mt-2 space-y-1">
+                  <div><strong>GPS Location:</strong> <span class="mono text-slate-300">${coordsText}</span></div>
+                  <div><strong>Corridor:</strong> ${u.industry_address || 'Ranipet Industrial Belt'}</div>
+                  <div><strong>Applicant:</strong> ${u.name} (<span class="mono">${u.email}</span>)</div>
+                </div>
+                <div class="flex items-center space-x-1.5 mt-2.5">
+                  ${govStatus}
+                  ${adminStatus}
+                </div>
+              </div>
+              <div class="flex items-center space-x-2 pt-2 border-t border-slate-800/80">
+                ${!u.gov_verified ? `
+                  <button onclick="verifyIndustryGov('${u.id}', '${(u.factory_name || u.name).replace(/'/g, "\\'")}')" class="flex-1 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-[11px] rounded-lg shadow transition flex items-center justify-center space-x-1">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 inline"></i>
+                    <span>Verify & Endorse</span>
+                  </button>
+                ` : `
+                  <span class="flex-1 text-center py-1 text-[11px] text-emerald-400 font-bold bg-emerald-950/40 rounded-lg border border-emerald-500/30">Endorsed by Govt</span>
+                `}
+                ${(u.industry_lat && u.industry_lon) ? `
+                  <button onclick="panToGoogleMap(${u.industry_lat}, ${u.industry_lon}, '${(u.factory_name || u.name).replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 text-[11px] font-bold rounded-lg border border-slate-700 transition" title="Locate on Google Maps">
+                    📍 Map
+                  </button>
+                ` : ''}
+              </div>
+            `;
+            list.appendChild(card);
+          });
+          if (window.lucide) lucide.createIcons();
+        } else {
+          section.classList.add('hidden');
+        }
+      } catch (e) {
+        console.error("fetchPendingIndustriesForRegulator failed:", e);
+      }
+    }
+
+    async function verifyIndustryGov(userId, factoryName) {
+      if (!confirm(`Grant official Government PCB statutory endorsement for "${factoryName}"?\n(Requires both Government and Admin verification before plotting onto Google Maps).`)) return;
+      try {
+        const res = await authFetch(`/api/regulator/verify-industry/${userId}`, { method: 'POST' });
+        if (!res || !res.ok) {
+          const err = await res.json();
+          alert("Verification failed: " + (err.detail || "Request failed"));
+          return;
+        }
+        const data = await res.json();
+        if (data.dual_verified) {
+          alert(`🎉 DUAL VERIFICATION COMPLETE!\n\n"${factoryName}" is fully verified by both Government PCB and Administrator.\nAdded directly to Google Maps at monitored coordinates!`);
+          await fetchFactories();
+          if (data.factory && data.factory.geometry) {
+            const coords = data.factory.geometry.coordinates;
+            panToGoogleMap(coords[1], coords[0], factoryName);
+          }
+        } else {
+          alert(`✅ Government PCB statutory endorsement recorded for "${factoryName}".\nAwaiting Super Admin authorization before being added to Google Maps.`);
+        }
+        loadRegulatorPortalData();
+      } catch (e) {
+        alert("Network error: " + e.message);
+      }
+    }
+
+    async function fetchRegulatorAdminLogs() {
+      try {
+        const res = await authFetch('/api/regulator/admin-logs');
+        if (!res || !res.ok) return;
+        const data = await res.json();
+        const tbody = document.getElementById('regAdminLogsBody');
+        const countBadge = document.getElementById('regAdminLogsCount');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const logs = data.logs || [];
+        if (countBadge) countBadge.innerText = `${logs.length} Events`;
+        if (logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500 text-xs">No administrator oversight actions recorded yet.</td></tr>';
+          return;
+        }
+        logs.slice(0, 30).forEach(log => {
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-800/40 transition";
+          tr.innerHTML = `
+            <td class="p-2.5 text-slate-400 font-mono text-[10px] whitespace-nowrap">${formatLiveTiming(log.timestamp)}</td>
+            <td class="p-2.5 font-bold text-amber-300 whitespace-nowrap">${log.user_name || 'Super Admin'}</td>
+            <td class="p-2.5 whitespace-nowrap"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono text-[10px] font-bold">${log.action}</span></td>
+            <td class="p-2.5 text-slate-300 font-sans text-xs">${log.details || ''}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error("fetchRegulatorAdminLogs failed:", e);
       }
     }
 
@@ -3410,7 +4838,7 @@
             <td class="p-2.5 text-slate-400">${n.violation_type}</td>
             <td class="p-2.5 text-amber-300 font-bold mono">₹ ${(n.fine_inr || 0).toLocaleString()}</td>
             <td class="p-2.5 text-slate-400">${n.issued_by}</td>
-            <td class="p-2.5 text-slate-500">${new Date(n.timestamp).toLocaleDateString()}</td>
+            <td class="p-2.5 text-slate-400 font-mono text-[10px] whitespace-nowrap">${formatLiveTiming(n.timestamp)}</td>
             <td class="p-2.5 text-right font-mono text-cyan-400">PDF Ready</td>
           `;
           tbody.appendChild(tr);
@@ -3440,6 +4868,7 @@
         const no2 = document.getElementById('pubNo2');
         const pm25 = document.getElementById('pubPm25');
         const pm10 = document.getElementById('pubPm10');
+        const alertTime = document.getElementById('citizenAlertLiveTime');
 
         if (aqiVal) aqiVal.innerText = data.aqi;
         if (aqiCat) {
@@ -3450,6 +4879,10 @@
         if (no2) no2.innerText = data.pollutant_levels.no2_ugm3 + ' µg';
         if (pm25) pm25.innerText = data.pollutant_levels.pm25_ugm3 + ' µg';
         if (pm10) pm10.innerText = data.pollutant_levels.pm10_ugm3 + ' µg';
+
+        if (alertTime) {
+          alertTime.innerText = 'Active Alert Directive • ' + new Date().toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST';
+        }
       } catch (e) {
         console.error("fetchPublicAirQuality failed:", e);
       }
@@ -3496,7 +4929,7 @@
           tr.className = "hover:bg-slate-800/40 transition";
           tr.innerHTML = `
             <td class="p-2.5 font-bold text-emerald-400">${g.id}</td>
-            <td class="p-2.5 text-slate-400">${new Date(g.timestamp).toLocaleDateString()}</td>
+            <td class="p-2.5 text-slate-400 font-mono text-[10px] whitespace-nowrap">${formatLiveTiming(g.timestamp)}</td>
             <td class="p-2.5 text-slate-200 font-sans">${g.location}</td>
             <td class="p-2.5 font-bold text-amber-300">Level ${g.odor_level}/5</td>
             <td class="p-2.5 text-slate-300 font-sans">${g.pollutant_type}</td>
@@ -3584,28 +5017,39 @@
     // Backend Health Ping & Config Fetch
     async function checkBackendHealth() {
       const badge = document.getElementById('backendStatusBadge');
+      if (currentUser && (currentUser.role === 'industry_manager' || currentUser.role === 'regulator' || currentUser.role === 'citizen')) {
+        if (badge) badge.style.display = 'none';
+        return;
+      }
       const dot = document.getElementById('backendStatusDot');
       const text = document.getElementById('backendStatusText');
       const pingText = document.getElementById('backendPingText');
       
-      badge.classList.remove('hidden');
+      if (badge) {
+        badge.classList.remove('hidden');
+        badge.style.display = '';
+      }
       const t0 = performance.now();
       try {
         const res = await fetch('/api/health');
         const latency = Math.round(performance.now() - t0);
         if (res.ok) {
-          dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping";
-          text.innerText = "Live Backend Connected";
-          text.className = "text-slate-300";
-          pingText.innerText = `${latency}ms`;
+          if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping";
+          if (text) {
+            text.innerText = "Live Backend Connected";
+            text.className = "text-slate-300";
+          }
+          if (pingText) pingText.innerText = `${latency}ms`;
         } else {
           throw new Error("Bad status");
         }
       } catch (err) {
-        dot.className = "w-2 h-2 rounded-full bg-red-500";
-        text.innerText = "Backend Offline";
-        text.className = "text-red-400";
-        pingText.innerText = "offline";
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-red-500";
+        if (text) {
+          text.innerText = "Backend Offline";
+          text.className = "text-red-400";
+        }
+        if (pingText) pingText.innerText = "offline";
       }
     }
 
@@ -4775,10 +6219,9 @@
           }
 
           tbody.innerHTML = data.violations.map(v => {
-            const timeStr = (v.detection_timestamp || v.created_at || '').replace('T', ' ').replace('Z', ' IST');
             return `
               <tr class="hover:bg-slate-900/80 transition">
-                <td class="p-2.5 text-slate-400 whitespace-nowrap">${timeStr}</td>
+                <td class="p-2.5 text-slate-400 font-mono text-[10px] whitespace-nowrap">${formatLiveTiming(v.detection_timestamp || v.created_at)}</td>
                 <td class="p-2.5">
                   <div class="font-bold text-slate-200 font-sans">${v.factory_name}</div>
                   <div class="text-[10px] text-slate-500">${v.registration_no || v.factory_id}</div>
@@ -5030,6 +6473,8 @@
 
     // Initialize on window load
     window.addEventListener('DOMContentLoaded', () => {
+      updateLiveClock();
+      setInterval(updateLiveClock, 1000);
       fetchConfig();
       fetchFactories();
       fetchScenarios();

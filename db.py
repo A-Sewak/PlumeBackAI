@@ -16,7 +16,7 @@ def get_db():
     return conn
 
 def init_db():
-    """Create night_violations table if it does not exist."""
+    """Create night_violations table if it does not exist and deduplicate records."""
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     with get_db() as conn:
         conn.execute("""
@@ -37,6 +37,13 @@ def init_db():
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        # ponytail: deduplicate table on startup so repeated scans don't inflate fines
+        conn.execute("""
+            DELETE FROM night_violations
+            WHERE id NOT IN (
+                SELECT MAX(id) FROM night_violations GROUP BY factory_id, pollutant
+            )
+        """)
         conn.commit()
 
 def is_curfew_hours(dt_str: Optional[str] = None) -> bool:
@@ -52,9 +59,26 @@ def record_night_violation(
     detection_timestamp: str,
     source: str = "satellite"
 ) -> Optional[int]:
-    """Store violation into database across all hours (24/7 continuous logging)."""
+    """Store violation with deduplication to prevent repeated fines over and over."""
     init_db()
+    fid = factory.get("factory_id", "UNKNOWN")
     with get_db() as conn:
+        # ponytail: check if violation already exists for factory to avoid duplicate fines
+        existing = conn.execute("""
+            SELECT id FROM night_violations 
+            WHERE factory_id = ? AND pollutant = ?
+            ORDER BY id DESC LIMIT 1
+        """, (fid, pollutant)).fetchone()
+        
+        if existing:
+            conn.execute("""
+                UPDATE night_violations
+                SET concentration = ?, detection_timestamp = ?, plume_lat = ?, plume_lon = ?
+                WHERE id = ?
+            """, (float(concentration), detection_timestamp, float(plume_lat), float(plume_lon), existing["id"]))
+            conn.commit()
+            return existing["id"]
+
         cursor = conn.execute("""
             INSERT INTO night_violations (
                 factory_id, factory_name, registration_no, pollutant,
@@ -62,7 +86,7 @@ def record_night_violation(
                 est_release_time, penalty_inr, plume_lat, plume_lon, source
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
-            factory.get("factory_id", "UNKNOWN"),
+            fid,
             factory.get("name", "Unknown Unit"),
             factory.get("registration_no", "N/A"),
             pollutant,

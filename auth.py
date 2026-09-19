@@ -89,11 +89,27 @@ def create_user(
     name: str,
     role: str,
     factory_id: Optional[str] = None,
-    factory_name: Optional[str] = None
+    factory_name: Optional[str] = None,
+    status: str = "approved",
+    designation: Optional[str] = None,
+    industry_type: Optional[str] = None,
+    industry_lat: Optional[float] = None,
+    industry_lon: Optional[float] = None,
+    industry_address: Optional[str] = None,
+    location_lat: Optional[float] = None,
+    location_lon: Optional[float] = None,
+    location_address: Optional[str] = None,
+    is_new_industry: bool = False,
+    admin_verified: bool = False,
+    gov_verified: bool = False
 ) -> Dict[str, Any]:
     """Create a new user and safely persist to disk."""
     if get_user_by_email(email):
         raise HTTPException(status_code=400, detail="User with this email already exists")
+
+    eff_lat = location_lat if location_lat is not None else industry_lat
+    eff_lon = location_lon if location_lon is not None else industry_lon
+    eff_addr = location_address or industry_address
 
     users = load_users()
     new_id = f"USR-{len(users) + 1:03d}"
@@ -103,13 +119,59 @@ def create_user(
         "password_hash": hash_password(password),
         "name": name.strip(),
         "role": role.strip(),
+        "status": status,
         "factory_id": factory_id,
         "factory_name": factory_name,
+        "industry_type": industry_type,
+        "designation": designation,
+        "industry_lat": eff_lat,
+        "industry_lon": eff_lon,
+        "industry_address": eff_addr,
+        "location_lat": eff_lat,
+        "location_lon": eff_lon,
+        "location_address": eff_addr,
+        "is_new_industry": is_new_industry,
+        "admin_verified": admin_verified,
+        "gov_verified": gov_verified,
         "created_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     }
     users.append(new_user)
     save_users(users)
     return sanitize_user(new_user)
+
+def verify_user_dual(user_id: str, verifier: str) -> Optional[Dict[str, Any]]:
+    """
+    Update verification flags for user ('gov' or 'admin').
+    If both gov_verified and admin_verified are True, set status='approved'.
+    """
+    # ponytail: minimal dual-flag toggle, upgrade to workflow state machine if audits require it
+    users = load_users()
+    for u in users:
+        if u.get("id") == user_id:
+            if verifier == "admin":
+                u["admin_verified"] = True
+            elif verifier == "gov":
+                u["gov_verified"] = True
+
+            if u.get("is_new_industry"):
+                if u.get("admin_verified") and u.get("gov_verified"):
+                    u["status"] = "approved"
+            else:
+                u["status"] = "approved"
+
+            save_users(users)
+            return u
+    return None
+
+def update_user_status(user_id: str, status: str) -> Optional[Dict[str, Any]]:
+    """Update registration status (approved/rejected/pending) for a user."""
+    users = load_users()
+    for u in users:
+        if u.get("id") == user_id:
+            u["status"] = status
+            save_users(users)
+            return sanitize_user(u)
+    return None
 
 def delete_user(user_id: str) -> bool:
     """Delete a user by ID from storage."""

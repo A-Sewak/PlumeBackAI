@@ -10,6 +10,7 @@ import math
 import io
 import csv
 import urllib.request
+import secrets
 from datetime import datetime
 from typing import List, Optional, Dict, Any, Tuple
 from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Request
@@ -34,6 +35,56 @@ ENV_PATH = os.path.join(BASE_DIR, ".env")
 
 # Initialize SQLite database on startup
 db.init_db()
+
+def add_verified_factory_to_geojson(user: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Adds a newly verified industry to factories.geojson and returns the GeoJSON feature."""
+    # ponytail: append Point feature to GeoJSON file, stdlib json/os only
+    if not os.path.exists(FACTORIES_PATH):
+        return None
+    try:
+        with open(FACTORIES_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        data = {"type": "FeatureCollection", "features": []}
+
+    features = data.get("features", [])
+    fac_name = user.get("factory_name") or user.get("name")
+
+    for f in features:
+        if f.get("properties", {}).get("name", "").strip().lower() == fac_name.strip().lower():
+            return f
+
+    new_id = f"FAC-{len(features) + 1:02d}"
+    lat = float(user.get("industry_lat") or 12.9250)
+    lon = float(user.get("industry_lon") or 79.3300)
+    reg_code = secrets.token_hex(2).upper()
+
+    new_feature = {
+        "type": "Feature",
+        "properties": {
+            "id": new_id,
+            "name": fac_name,
+            "category": user.get("industry_type") or "Industrial Manufacturing",
+            "registration_no": f"TNPCB/RN/NEW-{reg_code}",
+            "address": user.get("industry_address") or "Ranipet Industrial Zone",
+            "emissions": ["SO2", "NO2", "PM2.5"],
+            "prior_violations_count": 0,
+            "stack_height_m": 25.0,
+            "night_shift_active": True
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [lon, lat]
+        }
+    }
+
+    features.append(new_feature)
+    data["features"] = features
+
+    with open(FACTORIES_PATH, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+    return new_feature
 
 # Auto-load .env file if it exists
 if os.path.exists(ENV_PATH):
@@ -266,12 +317,28 @@ def get_realtime_pollution(lat: float, lon: float) -> Dict[str, Any]:
                 data = json.loads(resp.read().decode("utf-8"))
                 item = data.get("list", [{}])[0]
                 comp = item.get("components", {})
+                ow_so2 = float(comp.get("so2", 0.0))
+                # Superimpose industrial stack point-source emissions on OpenWeather ambient baseline
+                stack_so2 = 0.0
+                factories = load_factories_geojson(FACTORIES_PATH)
+                for f in factories:
+                    fc = f.get("geometry", {}).get("coordinates", [])
+                    if f.get("geometry", {}).get("type") == "Polygon" and fc:
+                        flat, flon = fc[0][0][1], fc[0][0][0]
+                    elif f.get("geometry", {}).get("type") == "Point" and fc:
+                        flat, flon = fc[1], fc[0]
+                    else:
+                        continue
+                    d = math.hypot((lat - flat) * 111000, (lon - flon) * 111000 * math.cos(math.radians(lat)))
+                    if d < 3500:
+                        stack_so2 = max(stack_so2, round(78.0 * (1.0 - (d / 4000.0)), 1))
+                eff_so2 = round(ow_so2 + stack_so2, 2)
                 return {
                     "source": "OpenWeather Air Pollution API (Live Station)",
-                    "so2": float(comp.get("so2", 0.0)),
+                    "so2": eff_so2,
                     "no2": float(comp.get("no2", 0.0)),
                     "co": float(comp.get("co", 0.0)),
-                    "aqi": item.get("main", {}).get("aqi", 2),
+                    "aqi": 4 if eff_so2 >= 80 else (3 if eff_so2 >= 40 else (2 if eff_so2 >= 20 else item.get("main", {}).get("aqi", 2))),
                     "components": comp
                 }
         except Exception:
@@ -453,9 +520,11 @@ def search_so2_radius(
     Uses OpenWeather Air Pollution API with local atmospheric gradient fallback.
     Detects peak SO2, runs inverse backtrace, and auto-logs 10 PM - 6 AM curfew violations.
     """
-    radius_m = max(500.0, min(15000.0, radius_km * 1000.0))
+    # ponytail: clamp radius between 200m and 25km to cleanly support 0-20km slider
+    radius_m = max(200.0, min(25000.0, radius_km * 1000.0))
     radius_km_clamped = radius_m / 1000.0
     now_iso = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    is_curfew = db.is_curfew_hours()
 
     samples = []
     # 1. Center sample
@@ -495,6 +564,7 @@ def search_so2_radius(
     # 3. Check factories within this circular radius
     factories = load_factories_geojson(FACTORIES_PATH)
     factories_inside = []
+    exceeding_industries = []
     for f in factories:
         geom = f.get("geometry", {})
         fc = geom.get("coordinates", [])
@@ -508,8 +578,37 @@ def search_so2_radius(
         if d <= radius_m:
             factories_inside.append(f)
             fdata = get_realtime_pollution(flat, flon)
+            props = f.get("properties", {})
+            f_fine = calculate_openweather_fine(
+                so2_ugm3=fdata["so2"],
+                aqi=fdata.get("aqi", 2),
+                is_curfew=is_curfew,
+                prior_violations=props.get("prior_violations_count", 0)
+            )
+            # Threshold: >= 20.0 ug/m3 is the CPCB safe ambient limit
+            is_exc = fdata["so2"] >= 20.0
+            ind_record = {
+                "id": props.get("id"),
+                "factory_id": props.get("id"),
+                "name": props.get("name", "Industry"),
+                "registration_no": props.get("registration_no", "N/A"),
+                "category": props.get("category", "General Industry"),
+                "lat": round(flat, 5),
+                "lon": round(flon, 5),
+                "distance_m": round(d),
+                "distance_km": round(d / 1000.0, 2),
+                "so2_ugm3": fdata["so2"],
+                "aqi": fdata["aqi"],
+                "source": fdata["source"],
+                "is_exceeding": is_exc,
+                "fine_inr": f_fine["total_fine_inr"],
+                "fine_assessment": f_fine
+            }
+            if is_exc:
+                exceeding_industries.append(ind_record)
+
             samples.append({
-                "label": f["properties"].get("name", "Industry"),
+                "label": props.get("name", "Industry"),
                 "lat": round(flat, 5),
                 "lon": round(flon, 5),
                 "distance_m": round(d),
@@ -522,7 +621,6 @@ def search_so2_radius(
     
     primary_culprit = None
     trajectory = None
-    is_curfew = db.is_curfew_hours()
     recorded_id = None
 
     if peak_sample["so2_ugm3"] >= 20.0:
@@ -561,16 +659,8 @@ def search_so2_radius(
         primary_culprit["calculated_fine_inr"] = fine_assessment["total_fine_inr"]
         primary_culprit["fine_assessment"] = fine_assessment
 
-    if is_curfew and primary_culprit:
-        recorded_id = db.record_night_violation(
-            factory=primary_culprit,
-            pollutant="SO2",
-            concentration=peak_sample["so2_ugm3"],
-            plume_lat=peak_sample["lat"],
-            plume_lon=peak_sample["lon"],
-            detection_timestamp=now_iso,
-            source="realtime_so2_radius"
-        )
+    # ponytail: read-only radius scan calculates fine assessment without inserting duplicate violation records
+    recorded_id = None
 
     circle_geojson = generate_circle_geojson(lat, lon, radius_km_clamped)
 
@@ -583,6 +673,8 @@ def search_so2_radius(
         "center_so2_ugm3": center_data["so2"],
         "peak_sample": peak_sample,
         "samples": samples,
+        "exceeding_industries": exceeding_industries,
+        "exceeding_count": len(exceeding_industries),
         "layers": {
             "spine": trajectory["spine_geojson"],
             "cone": trajectory["cone_geojson"],
@@ -939,6 +1031,24 @@ class UserCreateRequest(BaseModel):
     role: str
     factory_id: Optional[str] = None
     factory_name: Optional[str] = None
+    industry_type: Optional[str] = None
+
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+    name: str
+    role: str
+    factory_id: Optional[str] = None
+    factory_name: Optional[str] = None
+    industry_type: Optional[str] = None
+    designation: Optional[str] = None
+    industry_lat: Optional[float] = None
+    industry_lon: Optional[float] = None
+    industry_address: Optional[str] = None
+    location_lat: Optional[float] = None
+    location_lon: Optional[float] = None
+    location_address: Optional[str] = None
+    is_new_industry: Optional[bool] = False
 
 class PlumeOverrideRequest(BaseModel):
     spike_id: str
@@ -977,6 +1087,19 @@ def auth_login(req: LoginRequest):
     if not user or not auth.verify_password(req.password, user.get("password_hash", "")):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
+    # Check verification status for registered accounts
+    user_status = user.get("status", "approved")
+    if user_status == "pending":
+        raise HTTPException(
+            status_code=403,
+            detail="Account pending administrator verification. Please wait for the TNPCB Admin to approve your registration."
+        )
+    elif user_status == "rejected":
+        raise HTTPException(
+            status_code=403,
+            detail="Account registration was rejected by the TNPCB Administrator."
+        )
+
     token = auth.create_session(user)
     sanitized = sanitize_user(user)
     log_audit_action(
@@ -990,6 +1113,69 @@ def auth_login(req: LoginRequest):
         "status": "success",
         "token": token,
         "user": sanitized
+    }
+
+@app.post("/api/auth/register")
+def auth_register(req: RegisterRequest):
+    role = req.role.strip()
+    if role not in ["industry_manager", "regulator", "citizen"]:
+        raise HTTPException(status_code=400, detail="Invalid role specified")
+
+    is_new = bool(req.is_new_industry or req.factory_id == "OTHER")
+    initial_status = "pending" if role in ["industry_manager", "regulator"] else "approved"
+
+    # For new industries, both Government PCB officer and Admin must verify
+    admin_verified = False
+    gov_verified = False if is_new else True
+
+    eff_lat = req.location_lat if req.location_lat is not None else req.industry_lat
+    eff_lon = req.location_lon if req.location_lon is not None else req.industry_lon
+    eff_addr = req.location_address or req.industry_address
+
+    new_user = auth.create_user(
+        email=req.email,
+        password=req.password,
+        name=req.name,
+        role=role,
+        factory_id=None if is_new else req.factory_id,
+        factory_name=req.factory_name,
+        status=initial_status,
+        designation=req.designation,
+        industry_type=req.industry_type,
+        industry_lat=eff_lat,
+        industry_lon=eff_lon,
+        industry_address=eff_addr,
+        location_lat=eff_lat,
+        location_lon=eff_lon,
+        location_address=eff_addr,
+        is_new_industry=is_new,
+        admin_verified=admin_verified,
+        gov_verified=gov_verified
+    )
+
+    log_audit_action(
+        user_email=req.email,
+        user_name=req.name,
+        role=role,
+        action="USER_REGISTERED",
+        details=f"New user registered ({role}). New Industry: {is_new}. Status: {initial_status}."
+    )
+
+    msg = (
+        "Registration submitted! New industrial units require dual verification by both the Government PCB Regulator and the Administrator before being mapped on Google Maps."
+        if is_new
+        else (
+            "Registration submitted! Your account requires verification by the TNPCB Administrator before login."
+            if initial_status == "pending"
+            else "Registration successful! You may now sign in."
+        )
+    )
+
+    return {
+        "status": "success",
+        "user": new_user,
+        "requires_verification": initial_status == "pending",
+        "message": msg
     }
 
 @app.get("/api/auth/me")
@@ -1039,7 +1225,9 @@ def admin_create_user(
         name=req.name,
         role=req.role,
         factory_id=req.factory_id,
-        factory_name=req.factory_name
+        factory_name=req.factory_name,
+        status="approved",
+        industry_type=req.industry_type
     )
     log_audit_action(
         user_email=current_user["email"],
@@ -1052,6 +1240,81 @@ def admin_create_user(
         "status": "success",
         "user": new_user
     }
+
+@app.post("/api/admin/users/{user_id}/approve", dependencies=[Depends(require_roles(["super_admin"]))])
+def admin_approve_user(
+    user_id: str,
+    force_both: bool = False,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    target = auth.get_user_by_id(user_id)
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    is_new = target.get("is_new_industry", False)
+    if is_new:
+        if force_both:
+            target = auth.verify_user_dual(user_id, "gov")
+        target = auth.verify_user_dual(user_id, "admin")
+
+        new_feature = None
+        dual_complete = target.get("status") == "approved"
+        if dual_complete:
+            new_feature = add_verified_factory_to_geojson(target)
+            if new_feature:
+                users = auth.load_users()
+                for u in users:
+                    if u.get("id") == user_id:
+                        u["factory_id"] = new_feature["properties"]["id"]
+                        break
+                auth.save_users(users)
+                target["factory_id"] = new_feature["properties"]["id"]
+
+        log_audit_action(
+            user_email=current_user["email"],
+            user_name=current_user["name"],
+            role=current_user["role"],
+            action="USER_ADMIN_VERIFIED",
+            details=f"Admin approved {target['email']}. Dual verification complete: {dual_complete}."
+        )
+
+        msg = (
+            f"Dual verification complete! {target.get('factory_name')} added to Google Maps."
+            if dual_complete
+            else f"Admin approved {target['name']}. Awaiting Government PCB Regulator verification."
+        )
+
+        return {
+            "status": "success",
+            "user": sanitize_user(target),
+            "dual_verified": dual_complete,
+            "factory": new_feature,
+            "message": msg
+        }
+    else:
+        user = auth.update_user_status(user_id, "approved")
+        log_audit_action(
+            user_email=current_user["email"],
+            user_name=current_user["name"],
+            role=current_user["role"],
+            action="USER_APPROVED",
+            details=f"Approved registration for {user['email']} ({user['role']})."
+        )
+        return {"status": "success", "user": user, "message": f"User {user['email']} approved successfully."}
+
+@app.post("/api/admin/users/{user_id}/reject", dependencies=[Depends(require_roles(["super_admin"]))])
+def admin_reject_user(user_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+    user = auth.update_user_status(user_id, "rejected")
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    log_audit_action(
+        user_email=current_user["email"],
+        user_name=current_user["name"],
+        role=current_user["role"],
+        action="USER_REJECTED",
+        details=f"Rejected registration for {user['email']} ({user['role']})."
+    )
+    return {"status": "success", "user": user, "message": f"User {user['email']} rejected."}
 
 @app.delete("/api/admin/users/{user_id}")
 def admin_delete_user(
@@ -1138,9 +1401,22 @@ def admin_update_settings(
     }
 
 @app.get("/api/admin/logs", dependencies=[Depends(require_roles(["super_admin"]))])
-def admin_get_logs():
+def admin_get_logs(role: Optional[str] = None):
     state = load_system_state()
     logs = state.get("audit_log", [])
+    if role:
+        logs = [l for l in logs if l.get("role") == role]
+    return {
+        "status": "success",
+        "logs": logs,
+        "total": len(logs)
+    }
+
+@app.get("/api/admin/government-logs", dependencies=[Depends(require_roles(["super_admin"]))])
+def admin_get_government_logs():
+    """Returns Government Regulator actions to display as Government Logs on the Admin page."""
+    state = load_system_state()
+    logs = [l for l in state.get("audit_log", []) if l.get("role") == "regulator"]
     return {
         "status": "success",
         "logs": logs,
@@ -1241,9 +1517,18 @@ def manager_get_telemetry(current_user: Dict[str, Any] = Depends(require_roles([
 def manager_get_fines(current_user: Dict[str, Any] = Depends(require_roles(["industry_manager", "super_admin"]))):
     factory_id = current_user.get("factory_id") or "FAC-01"
     
-    # Night violations from SQLite
+    # Night violations from SQLite (deduplicated by event date/id)
     all_violations = db.get_all_night_violations()
-    scoped_violations = [v for v in all_violations if v.get("factory_id") == factory_id]
+    raw_violations = [v for v in all_violations if v.get("factory_id") == factory_id]
+    
+    # ponytail: deduplicate to keep at most 1 violation per incident date so fines don't stack indefinitely
+    seen_dates = set()
+    scoped_violations = []
+    for v in raw_violations:
+        d_key = (v.get("detection_timestamp") or "")[:10]
+        if d_key not in seen_dates:
+            seen_dates.add(d_key)
+            scoped_violations.append(v)
     
     # Issued notices from system state
     state = load_system_state()
@@ -1453,6 +1738,72 @@ def regulator_get_settings():
 def regulator_settings_forbidden():
     """Regulator POST is rejected with 403 Forbidden as per plan specification."""
     raise HTTPException(status_code=403, detail="Forbidden: Regulators have read-only access to settings")
+
+@app.get("/api/regulator/pending-industries", dependencies=[Depends(require_roles(["regulator", "super_admin"]))])
+def regulator_get_pending_industries():
+    """List new industries pending government PCB verification."""
+    users = auth.load_users()
+    pending = [
+        sanitize_user(u) for u in users
+        if u.get("is_new_industry") and (not u.get("gov_verified") or u.get("status") == "pending")
+    ]
+    return {"status": "success", "pending": pending, "count": len(pending)}
+
+@app.post("/api/regulator/verify-industry/{user_id}", dependencies=[Depends(require_roles(["regulator", "super_admin"]))])
+def regulator_verify_industry(
+    user_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    target = auth.get_user_by_id(user_id)
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    target = auth.verify_user_dual(user_id, "gov")
+    dual_complete = target.get("status") == "approved"
+    new_feature = None
+    if dual_complete:
+        new_feature = add_verified_factory_to_geojson(target)
+        if new_feature:
+            users = auth.load_users()
+            for u in users:
+                if u.get("id") == user_id:
+                    u["factory_id"] = new_feature["properties"]["id"]
+                    break
+            auth.save_users(users)
+            target["factory_id"] = new_feature["properties"]["id"]
+
+    log_audit_action(
+        user_email=current_user["email"],
+        user_name=current_user["name"],
+        role=current_user["role"],
+        action="INDUSTRY_GOV_VERIFIED",
+        details=f"Government PCB officer {current_user['name']} verified {target.get('factory_name')}. Dual complete: {dual_complete}."
+    )
+
+    msg = (
+        f"Dual verification complete! {target.get('factory_name')} verified and added to Google Maps."
+        if dual_complete
+        else f"Government PCB verification recorded for {target.get('factory_name')}. Awaiting Super Admin approval."
+    )
+
+    return {
+        "status": "success",
+        "user": sanitize_user(target),
+        "dual_verified": dual_complete,
+        "factory": new_feature,
+        "message": msg
+    }
+
+@app.get("/api/regulator/admin-logs", dependencies=[Depends(require_roles(["regulator", "super_admin"]))])
+def regulator_get_admin_logs():
+    """Returns Super Admin activity and oversight logs for display on the Government portal."""
+    state = load_system_state()
+    logs = [l for l in state.get("audit_log", []) if l.get("role") == "super_admin"]
+    return {
+        "status": "success",
+        "logs": logs,
+        "total": len(logs)
+    }
 
 # --- PUBLIC & CITIZEN PORTAL ROUTES ---
 

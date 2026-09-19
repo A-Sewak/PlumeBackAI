@@ -18,6 +18,852 @@
   },
   "audit_log": [
     {
+      "id": "AUD-1147",
+      "timestamp": "2026-09-19T06:58:02Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1146",
+      "timestamp": "2026-09-19T06:56:51Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1145",
+      "timestamp": "2026-09-19T06:56:42Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGIN",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) (citizen) logged in successfully."
+    },
+    {
+      "id": "AUD-1144",
+      "timestamp": "2026-09-19T06:56:25Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1143",
+      "timestamp": "2026-09-19T06:55:20Z",
+      "user_email": "gov_station_3f62ab@tnpcb.gov.in",
+      "user_name": "Officer Surveillance",
+      "role": "regulator",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (regulator). New Industry: False. Status: pending."
+    },
+    {
+      "id": "AUD-1142",
+      "timestamp": "2026-09-19T06:55:20Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified AdminFirst Petrochem BFCE. Dual complete: True."
+    },
+    {
+      "id": "AUD-1141",
+      "timestamp": "2026-09-19T06:55:20Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr2_8fe931@industry.com. Dual verification complete: False."
+    },
+    {
+      "id": "AUD-1140",
+      "timestamp": "2026-09-19T06:55:20Z",
+      "user_email": "mgr2_8fe931@industry.com",
+      "user_name": "Manager Two",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1139",
+      "timestamp": "2026-09-19T06:55:20Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr1_f2b2a8@industry.com. Dual verification complete: True."
+    },
+    {
+      "id": "AUD-1138",
+      "timestamp": "2026-09-19T06:55:20Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified GovFirst Chemical 4AC1. Dual complete: False."
+    },
+    {
+      "id": "AUD-1137",
+      "timestamp": "2026-09-19T06:55:20Z",
+      "user_email": "mgr1_f2b2a8@industry.com",
+      "user_name": "Manager One",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1136",
+      "timestamp": "2026-09-19T06:54:04Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1135",
+      "timestamp": "2026-09-19T06:40:43Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1134",
+      "timestamp": "2026-09-19T06:40:19Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1133",
+      "timestamp": "2026-09-19T06:40:13Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGIN",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) (citizen) logged in successfully."
+    },
+    {
+      "id": "AUD-1132",
+      "timestamp": "2026-09-19T06:40:07Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1131",
+      "timestamp": "2026-09-19T06:40:04Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User K. Ramanathan (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1130",
+      "timestamp": "2026-09-19T06:33:05Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User K. Ramanathan (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1129",
+      "timestamp": "2026-09-19T06:33:03Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1128",
+      "timestamp": "2026-09-19T06:32:29Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1127",
+      "timestamp": "2026-09-19T06:31:09Z",
+      "user_email": "gov_station_dbce77@tnpcb.gov.in",
+      "user_name": "Officer Surveillance",
+      "role": "regulator",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (regulator). New Industry: False. Status: pending."
+    },
+    {
+      "id": "AUD-1126",
+      "timestamp": "2026-09-19T06:31:09Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified AdminFirst Petrochem C0A6. Dual complete: True."
+    },
+    {
+      "id": "AUD-1125",
+      "timestamp": "2026-09-19T06:31:09Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr2_57265e@industry.com. Dual verification complete: False."
+    },
+    {
+      "id": "AUD-1124",
+      "timestamp": "2026-09-19T06:31:09Z",
+      "user_email": "mgr2_57265e@industry.com",
+      "user_name": "Manager Two",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1123",
+      "timestamp": "2026-09-19T06:31:09Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr1_e18d5b@industry.com. Dual verification complete: True."
+    },
+    {
+      "id": "AUD-1122",
+      "timestamp": "2026-09-19T06:31:09Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified GovFirst Chemical 3EE2. Dual complete: False."
+    },
+    {
+      "id": "AUD-1121",
+      "timestamp": "2026-09-19T06:31:09Z",
+      "user_email": "mgr1_e18d5b@industry.com",
+      "user_name": "Manager One",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1120",
+      "timestamp": "2026-09-19T06:26:16Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1119",
+      "timestamp": "2026-09-19T06:16:58Z",
+      "user_email": "citizen@ranipet.org",
+      "user_name": "Ananya Krishnan (Vellore Citizen Alliance)",
+      "role": "citizen",
+      "action": "AUTH_LOGIN",
+      "details": "User Ananya Krishnan (Vellore Citizen Alliance) (citizen) logged in successfully."
+    },
+    {
+      "id": "AUD-1118",
+      "timestamp": "2026-09-19T06:16:47Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1117",
+      "timestamp": "2026-09-19T06:16:33Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User K. Ramanathan (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1116",
+      "timestamp": "2026-09-19T06:16:32Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1115",
+      "timestamp": "2026-09-19T06:16:28Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1114",
+      "timestamp": "2026-09-19T06:12:31Z",
+      "user_email": "gov_station_a56f3c@tnpcb.gov.in",
+      "user_name": "Officer Surveillance",
+      "role": "regulator",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (regulator). New Industry: False. Status: pending."
+    },
+    {
+      "id": "AUD-1113",
+      "timestamp": "2026-09-19T06:12:31Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified AdminFirst Petrochem 6F70. Dual complete: True."
+    },
+    {
+      "id": "AUD-1112",
+      "timestamp": "2026-09-19T06:12:31Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr2_8ea9f5@industry.com. Dual verification complete: False."
+    },
+    {
+      "id": "AUD-1111",
+      "timestamp": "2026-09-19T06:12:31Z",
+      "user_email": "mgr2_8ea9f5@industry.com",
+      "user_name": "Manager Two",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1110",
+      "timestamp": "2026-09-19T06:12:31Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr1_168631@industry.com. Dual verification complete: True."
+    },
+    {
+      "id": "AUD-1109",
+      "timestamp": "2026-09-19T06:12:31Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified GovFirst Chemical 6663. Dual complete: False."
+    },
+    {
+      "id": "AUD-1108",
+      "timestamp": "2026-09-19T06:12:31Z",
+      "user_email": "mgr1_168631@industry.com",
+      "user_name": "Manager One",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1107",
+      "timestamp": "2026-09-19T05:45:06Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1106",
+      "timestamp": "2026-09-19T05:45:04Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGOUT",
+      "details": "User K. Ramanathan logged out."
+    },
+    {
+      "id": "AUD-1105",
+      "timestamp": "2026-09-19T05:44:27Z",
+      "user_email": "manager@tannery.com",
+      "user_name": "K. Ramanathan",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User K. Ramanathan (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1104",
+      "timestamp": "2026-09-19T05:44:24Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGOUT",
+      "details": "User P. Soundararajan (TNPCB District Officer) logged out."
+    },
+    {
+      "id": "AUD-1103",
+      "timestamp": "2026-09-19T05:42:02Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "AUTH_LOGIN",
+      "details": "User P. Soundararajan (TNPCB District Officer) (regulator) logged in successfully."
+    },
+    {
+      "id": "AUD-1102",
+      "timestamp": "2026-09-19T05:42:00Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1101",
+      "timestamp": "2026-09-19T05:41:58Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1100",
+      "timestamp": "2026-09-19T05:40:10Z",
+      "user_email": "gov_station_d08c74@tnpcb.gov.in",
+      "user_name": "Officer Surveillance",
+      "role": "regulator",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (regulator). New Industry: False. Status: pending."
+    },
+    {
+      "id": "AUD-1099",
+      "timestamp": "2026-09-19T05:40:10Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified AdminFirst Petrochem 352E. Dual complete: True."
+    },
+    {
+      "id": "AUD-1098",
+      "timestamp": "2026-09-19T05:40:10Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr2_c67678@industry.com. Dual verification complete: False."
+    },
+    {
+      "id": "AUD-1097",
+      "timestamp": "2026-09-19T05:40:10Z",
+      "user_email": "mgr2_c67678@industry.com",
+      "user_name": "Manager Two",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1096",
+      "timestamp": "2026-09-19T05:40:10Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr1_178943@industry.com. Dual verification complete: True."
+    },
+    {
+      "id": "AUD-1095",
+      "timestamp": "2026-09-19T05:40:10Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified GovFirst Chemical DB46. Dual complete: False."
+    },
+    {
+      "id": "AUD-1094",
+      "timestamp": "2026-09-19T05:40:10Z",
+      "user_email": "mgr1_178943@industry.com",
+      "user_name": "Manager One",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1093",
+      "timestamp": "2026-09-19T05:32:49Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified AdminFirst Petrochem B4D9. Dual complete: True."
+    },
+    {
+      "id": "AUD-1092",
+      "timestamp": "2026-09-19T05:32:49Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr2_52286e@industry.com. Dual verification complete: False."
+    },
+    {
+      "id": "AUD-1091",
+      "timestamp": "2026-09-19T05:32:49Z",
+      "user_email": "mgr2_52286e@industry.com",
+      "user_name": "Manager Two",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1090",
+      "timestamp": "2026-09-19T05:32:49Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr1_3612fa@industry.com. Dual verification complete: True."
+    },
+    {
+      "id": "AUD-1089",
+      "timestamp": "2026-09-19T05:32:49Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified GovFirst Chemical 1ED3. Dual complete: False."
+    },
+    {
+      "id": "AUD-1088",
+      "timestamp": "2026-09-19T05:32:49Z",
+      "user_email": "mgr1_3612fa@industry.com",
+      "user_name": "Manager One",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1087",
+      "timestamp": "2026-09-19T05:11:05Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1086",
+      "timestamp": "2026-09-19T05:10:51Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1085",
+      "timestamp": "2026-09-19T05:10:26Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_APPROVED",
+      "details": "Approved registration for officer_flying@tnpcb.gov.in (regulator)."
+    },
+    {
+      "id": "AUD-1084",
+      "timestamp": "2026-09-19T05:09:55Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1083",
+      "timestamp": "2026-09-19T05:09:34Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1082",
+      "timestamp": "2026-09-19T05:09:31Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1081",
+      "timestamp": "2026-09-19T05:08:19Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified AdminFirst Petrochem F9F3. Dual complete: True."
+    },
+    {
+      "id": "AUD-1080",
+      "timestamp": "2026-09-19T05:08:19Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr2_f62037@industry.com. Dual verification complete: False."
+    },
+    {
+      "id": "AUD-1079",
+      "timestamp": "2026-09-19T05:08:19Z",
+      "user_email": "mgr2_f62037@industry.com",
+      "user_name": "Manager Two",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1078",
+      "timestamp": "2026-09-19T05:08:19Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr1_00aad8@industry.com. Dual verification complete: True."
+    },
+    {
+      "id": "AUD-1077",
+      "timestamp": "2026-09-19T05:08:19Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified GovFirst Chemical A484. Dual complete: False."
+    },
+    {
+      "id": "AUD-1076",
+      "timestamp": "2026-09-19T05:08:19Z",
+      "user_email": "mgr1_00aad8@industry.com",
+      "user_name": "Manager One",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1075",
+      "timestamp": "2026-09-19T05:07:41Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified AdminFirst Petrochem D9BB. Dual complete: True."
+    },
+    {
+      "id": "AUD-1074",
+      "timestamp": "2026-09-19T05:07:41Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr2_21387c@industry.com. Dual verification complete: False."
+    },
+    {
+      "id": "AUD-1073",
+      "timestamp": "2026-09-19T05:07:41Z",
+      "user_email": "mgr2_21387c@industry.com",
+      "user_name": "Manager Two",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1072",
+      "timestamp": "2026-09-19T05:07:41Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved mgr1_fff6bc@industry.com. Dual verification complete: True."
+    },
+    {
+      "id": "AUD-1071",
+      "timestamp": "2026-09-19T05:07:41Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified GovFirst Chemical 4BBF. Dual complete: False."
+    },
+    {
+      "id": "AUD-1070",
+      "timestamp": "2026-09-19T05:07:41Z",
+      "user_email": "mgr1_fff6bc@industry.com",
+      "user_name": "Manager One",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1069",
+      "timestamp": "2026-09-19T05:07:22Z",
+      "user_email": "test_mgr_c081a8@industry.com",
+      "user_name": "Test Manager",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User Test Manager (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1068",
+      "timestamp": "2026-09-19T05:07:22Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_ADMIN_VERIFIED",
+      "details": "Admin approved test_mgr_c081a8@industry.com. Dual verification complete: True."
+    },
+    {
+      "id": "AUD-1067",
+      "timestamp": "2026-09-19T05:07:21Z",
+      "user_email": "regulator@tnpcb.gov.in",
+      "user_name": "P. Soundararajan (TNPCB District Officer)",
+      "role": "regulator",
+      "action": "INDUSTRY_GOV_VERIFIED",
+      "details": "Government PCB officer P. Soundararajan (TNPCB District Officer) verified Test Kaveri Unit 57B0. Dual complete: False."
+    },
+    {
+      "id": "AUD-1066",
+      "timestamp": "2026-09-19T05:07:21Z",
+      "user_email": "test_mgr_c081a8@industry.com",
+      "user_name": "Test Manager",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). New Industry: True. Status: pending."
+    },
+    {
+      "id": "AUD-1065",
+      "timestamp": "2026-09-19T04:31:24Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1064",
+      "timestamp": "2026-09-19T04:31:22Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1063",
+      "timestamp": "2026-09-19T04:29:44Z",
+      "user_email": "leather_mgr@ranipet.com",
+      "user_name": "M. Kumar (Leather Ops Head)",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User M. Kumar (Leather Ops Head) (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1062",
+      "timestamp": "2026-09-19T04:29:42Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_APPROVED",
+      "details": "Approved registration for leather_mgr@ranipet.com (industry_manager)."
+    },
+    {
+      "id": "AUD-1061",
+      "timestamp": "2026-09-19T04:29:38Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1060",
+      "timestamp": "2026-09-19T04:29:34Z",
+      "user_email": "leather_mgr@ranipet.com",
+      "user_name": "M. Kumar (Leather Ops Head)",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). Status: pending."
+    },
+    {
+      "id": "AUD-1059",
+      "timestamp": "2026-09-19T04:11:47Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGOUT",
+      "details": "User Dr. Aris Thorne logged out."
+    },
+    {
+      "id": "AUD-1058",
+      "timestamp": "2026-09-19T04:11:42Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1057",
+      "timestamp": "2026-09-19T03:57:52Z",
+      "user_email": "new_manager@tannery.com",
+      "user_name": "Test Industry Head",
+      "role": "industry_manager",
+      "action": "AUTH_LOGIN",
+      "details": "User Test Industry Head (industry_manager) logged in successfully."
+    },
+    {
+      "id": "AUD-1056",
+      "timestamp": "2026-09-19T03:57:50Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "USER_APPROVED",
+      "details": "Approved registration for new_manager@tannery.com (industry_manager)."
+    },
+    {
+      "id": "AUD-1055",
+      "timestamp": "2026-09-19T03:57:46Z",
+      "user_email": "admin@plume.ai",
+      "user_name": "Dr. Aris Thorne",
+      "role": "super_admin",
+      "action": "AUTH_LOGIN",
+      "details": "User Dr. Aris Thorne (super_admin) logged in successfully."
+    },
+    {
+      "id": "AUD-1054",
+      "timestamp": "2026-09-19T03:57:42Z",
+      "user_email": "new_manager@tannery.com",
+      "user_name": "Test Industry Head",
+      "role": "industry_manager",
+      "action": "USER_REGISTERED",
+      "details": "New user registered (industry_manager). Status: pending."
+    },
+    {
       "id": "AUD-1053",
       "timestamp": "2026-09-18T20:17:43Z",
       "user_email": "admin@plume.ai",
