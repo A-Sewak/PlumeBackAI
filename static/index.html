@@ -121,16 +121,31 @@
     </div>
   </header>
 
-  <!-- Live District Broadcast Announcement Banner -->
-  <div id="broadcastBanner" class="hidden bg-gradient-to-r from-amber-600 via-rose-600 to-amber-700 text-white px-4 py-2 text-xs font-bold flex items-center justify-between shadow-lg z-30 shrink-0">
-    <div class="flex items-center space-x-2.5">
-      <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-200 animate-bounce"></i>
-      <span class="px-2 py-0.5 rounded bg-black/40 text-amber-200 uppercase text-[10px] tracking-wider font-black" id="broadcastTag">OFFICIAL DIRECTIVE</span>
-      <span id="broadcastText" class="text-white/95">Continuous CEMS telemetry cross-validation in progress.</span>
+  <!-- RED NOTIFICATION POPUP (TRIGGERED ONLY WHEN ALERT IS USED UNDER ADMIN PANEL) -->
+  <!-- ponytail: sleek floating red alert toast only shown when admin publishes/activates an alert -->
+  <div id="redAlertPopup" class="hidden fixed top-16 right-5 z-50 max-w-sm sm:max-w-md w-full bg-red-950/95 border-2 border-red-500 rounded-2xl p-4 shadow-2xl backdrop-blur text-white flex flex-col space-y-2.5 animate-in fade-in slide-in-from-top-4 duration-300">
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-xl bg-red-600/40 border border-red-400 flex items-center justify-center text-red-300 shrink-0">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block"></span>
+        </div>
+        <div>
+          <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-red-600 text-white border border-red-400 font-mono" id="redAlertPopupTag">🚨 DISTRICT EMERGENCY ALERT</span>
+          <h3 class="text-xs font-bold text-red-100 mt-1" id="redAlertPopupTitle">TNPCB AIR SURVEILLANCE DIRECTIVE</h3>
+        </div>
+      </div>
+      <button onclick="dismissRedAlertPopup()" class="text-red-300 hover:text-white p-1 rounded-lg hover:bg-red-900/50 transition" title="Dismiss Alert">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
     </div>
-    <div class="flex items-center space-x-2">
-      <span id="broadcastTime" class="text-[10px] text-white/70 mono"></span>
-      <button onclick="dismissBroadcast()" class="text-white/80 hover:text-white text-[11px] px-2 py-0.5 rounded bg-black/30 hover:bg-black/50 transition">✕ Dismiss</button>
+    <p id="redAlertPopupMsg" class="text-xs text-red-200/90 leading-relaxed bg-red-900/40 p-2.5 rounded-xl border border-red-500/40">
+      Alert details...
+    </p>
+    <div class="flex items-center justify-between text-[10px] text-red-300 pt-1 border-t border-red-900/80">
+      <span id="redAlertPopupTime" class="font-mono">Live Time</span>
+      <button onclick="dismissRedAlertPopup()" class="text-[10px] font-extrabold text-white px-3 py-1 rounded-lg bg-red-600 hover:bg-red-500 shadow transition">
+        Acknowledge
+      </button>
     </div>
   </div>
 
@@ -1394,85 +1409,66 @@
         </div>
       </div>
 
-      <!-- Urgent Community Alert Directive Banner -->
-      <div id="citizenAlertBanner" class="bg-gradient-to-r from-red-950/95 via-rose-950/70 to-slate-950 border-2 border-red-500/80 rounded-2xl p-4 shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div class="flex items-center space-x-3.5">
-          <div class="w-10 h-10 rounded-xl bg-red-600/30 border border-red-500 flex items-center justify-center text-red-400 shrink-0 shadow-lg shadow-red-950">
-            <i data-lucide="alert-triangle" class="w-5 h-5 text-red-400 animate-bounce"></i>
-          </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <span class="px-2 py-0.5 rounded bg-red-600 text-white font-black text-[10px] tracking-wider uppercase font-mono">POLLUTION ALERT</span>
-              <span class="font-bold text-red-200 text-xs">Palar Basin Elevated SO2 Inversion Advisory Active</span>
-            </div>
-            <p class="text-red-300/90 text-xs mt-0.5">Atmospheric thermal inversion has trapped industrial stack plumes across the residential corridor. Residents are advised to follow protective alert directives below.</p>
-          </div>
-        </div>
-        <div class="flex items-center space-x-2 shrink-0">
-          <span class="text-[10px] mono text-red-300 font-bold px-2.5 py-1 rounded-lg bg-red-950 border border-red-500/60 animate-pulse">ACTIVE DIRECTIVE</span>
-        </div>
-      </div>
-
       <!-- Top Row: AQI Gauge & Health Recommendations -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- AQI Gauge (1 col) -->
-        <div class="bg-slate-900/90 border border-red-500/40 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-3 text-xs">
               <span class="font-bold text-slate-300">Ambient Air Quality</span>
-              <span class="text-[10px] text-red-400 mono font-bold">● High Exposure Zone</span>
+              <span class="text-[10px] text-emerald-400 mono font-semibold">● Live Regional Sounding</span>
             </div>
             <div class="text-center py-3">
-              <div class="text-5xl font-black text-red-500 font-mono" id="pubAqiVal">168</div>
-              <div class="text-xs font-black uppercase tracking-wider text-red-400 bg-red-500/20 px-2.5 py-1 rounded-full border border-red-500/40 inline-block mt-2" id="pubAqiCat">🚨 UNHEALTHY AIR ALERT</div>
-              <p class="text-[11px] text-slate-400 mt-2">Dominant Pollutant: <strong class="text-red-300">SO₂ (Sulfur Dioxide)</strong></p>
+              <div class="text-5xl font-black text-slate-100 font-mono" id="pubAqiVal">--</div>
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded-full border border-slate-700 inline-block mt-2" id="pubAqiCat">Monitored</div>
+              <p class="text-[11px] text-slate-400 mt-2">Dominant Pollutant: <strong class="text-slate-200">SO₂ (Sulfur Dioxide)</strong></p>
             </div>
           </div>
           <div class="grid grid-cols-4 gap-1 text-center text-[10px] font-mono pt-3 border-t border-slate-800">
-            <div><span class="text-slate-500">SO₂</span><div class="font-bold text-red-400" id="pubSo2">78 µg</div></div>
-            <div><span class="text-slate-500">PM2.5</span><div class="font-bold text-slate-200" id="pubPm25">62 µg</div></div>
-            <div><span class="text-slate-500">PM10</span><div class="font-bold text-slate-200" id="pubPm10">115 µg</div></div>
-            <div><span class="text-slate-500">NO₂</span><div class="font-bold text-slate-200" id="pubNo2">38 µg</div></div>
+            <div><span class="text-slate-500">SO₂</span><div class="font-bold text-cyan-400" id="pubSo2">-- µg</div></div>
+            <div><span class="text-slate-500">PM2.5</span><div class="font-bold text-slate-200" id="pubPm25">-- µg</div></div>
+            <div><span class="text-slate-500">PM10</span><div class="font-bold text-slate-200" id="pubPm10">-- µg</div></div>
+            <div><span class="text-slate-500">NO₂</span><div class="font-bold text-slate-200" id="pubNo2">-- µg</div></div>
           </div>
         </div>
 
         <!-- Health Advisories (2 cols) -->
-        <div class="lg:col-span-2 bg-gradient-to-br from-slate-900 via-red-950/25 to-slate-950 border-2 border-red-500/60 rounded-2xl p-5 shadow-2xl flex flex-col justify-between">
+        <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center space-x-2">
-                <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i>
-                <h2 class="text-sm font-bold text-red-200">Public Health Protective Directives & Air Alerts</h2>
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                <h2 class="text-sm font-bold text-slate-200">Public Health Protective Advisories</h2>
               </div>
-              <span class="px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 text-[10px] font-bold font-mono">STATUS: HIGH ALERT</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono">TNPCB ADVISORY</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div class="bg-red-950/40 p-3 rounded-xl border border-red-500/50 shadow-md">
-                <div class="font-bold text-red-400 mb-1 flex items-center space-x-1.5">
-                  <span class="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block"></span>
-                  <span>🏠 Nocturnal Window Closure Alert</span>
+              <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
+                <div class="font-bold text-slate-200 mb-1 flex items-center space-x-1.5">
+                  <i data-lucide="home" class="w-3.5 h-3.5 text-cyan-400"></i>
+                  <span>Nocturnal Ventilation</span>
                 </div>
-                <p class="text-red-200/90 text-[11px]">Keep residential windows closed between 10 PM and 6 AM due to nocturnal thermal inversion trapping industrial stack plumes.</p>
+                <p class="text-slate-400 text-[11px]">Keep residential windows closed between 10 PM and 6 AM during nocturnal thermal inversion periods.</p>
               </div>
-              <div class="bg-red-950/40 p-3 rounded-xl border border-red-500/50 shadow-md">
-                <div class="font-bold text-red-400 mb-1 flex items-center space-x-1.5">
-                  <span class="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block"></span>
-                  <span>😷 Masking Advisory Alert</span>
+              <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
+                <div class="font-bold text-slate-200 mb-1 flex items-center space-x-1.5">
+                  <i data-lucide="wind" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Masking Guidance</span>
                 </div>
-                <p class="text-red-200/90 text-[11px]">Wear protective N95/FFP2 masks when commuting through SIPCOT Phase I & II and along Walajapet Road.</p>
+                <p class="text-slate-400 text-[11px]">Wear protective N95/FFP2 masks when commuting through SIPCOT Phase I & II and Walajapet Road.</p>
               </div>
-              <div class="bg-red-950/40 p-3 rounded-xl border border-red-500/50 shadow-md">
-                <div class="font-bold text-red-400 mb-1 flex items-center space-x-1.5">
-                  <span class="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block"></span>
-                  <span>👶 Vulnerable Population Alert</span>
+              <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
+                <div class="font-bold text-slate-200 mb-1 flex items-center space-x-1.5">
+                  <i data-lucide="heart-pulse" class="w-3.5 h-3.5 text-amber-400"></i>
+                  <span>Sensitive Groups</span>
                 </div>
-                <p class="text-red-200/90 text-[11px]">Children, elderly, and asthma patients should suspend morning exercise within 800m of industrial stacks.</p>
+                <p class="text-slate-400 text-[11px]">Children, elderly, and asthma patients should suspend outdoor exercise during peak evening hours.</p>
               </div>
             </div>
           </div>
           <div class="text-[11px] text-slate-400 mt-3 flex items-center justify-between border-t border-slate-800 pt-2">
             <span>Verified Source: TNPCB Care Air Centre & OpenWeather Live Sounding</span>
-            <span class="mono text-red-400 font-bold" id="citizenAlertLiveTime">Active Alert Directive</span>
+            <span class="mono text-slate-500" id="citizenLiveSoundingTime">Live Sounding Data</span>
           </div>
         </div>
       </div>
@@ -3597,34 +3593,47 @@
       lucide.createIcons();
     }
 
-    // --- DISTRICT BROADCAST DIRECTIVE ---
+    // --- DISTRICT BROADCAST DIRECTIVE (RED POPUP TRIGGERED BY ADMIN PANEL) ---
+    // ponytail: red alert popup only shown when alert directive is activated under admin panel
+    let _dismissedRedAlertKey = null;
+
     async function fetchBroadcast() {
       try {
         const res = await fetch('/api/public/broadcast');
         if (!res.ok) return;
         const data = await res.json();
         const b = data.broadcast;
-        const banner = document.getElementById('broadcastBanner');
-        const bText = document.getElementById('broadcastText');
-        const bTag = document.getElementById('broadcastTag');
-        const bTime = document.getElementById('broadcastTime');
+        const popup = document.getElementById('redAlertPopup');
+        const popTitle = document.getElementById('redAlertPopupTitle');
+        const popMsg = document.getElementById('redAlertPopupMsg');
+        const popTag = document.getElementById('redAlertPopupTag');
+        const popTime = document.getElementById('redAlertPopupTime');
 
         if (b && b.active && b.message) {
-          if (bText) bText.innerText = b.message;
-          if (bTag) bTag.innerText = (b.title || 'OFFICIAL DIRECTIVE').toUpperCase();
-          if (bTime) bTime.innerText = b.updated_at ? new Date(b.updated_at).toLocaleTimeString() : '';
-          if (banner) banner.classList.remove('hidden');
+          const alertKey = `${b.title || ''}|${b.message}|${b.updated_at || ''}`;
+          if (popTitle) popTitle.innerText = b.title || 'TNPCB AIR SURVEILLANCE DIRECTIVE';
+          if (popMsg) popMsg.innerText = b.message;
+          if (popTag) popTag.innerText = `🚨 ${b.severity ? b.severity.toUpperCase() : 'DISTRICT'} ALERT`;
+          if (popTime) popTime.innerText = b.updated_at ? ('Issued ' + new Date(b.updated_at).toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit' }) + ' IST') : 'Active Alert';
+
+          if (popup && _dismissedRedAlertKey !== alertKey) {
+            popup.classList.remove('hidden');
+          }
         } else {
-          if (banner) banner.classList.add('hidden');
+          if (popup) popup.classList.add('hidden');
         }
+        if (window.lucide) lucide.createIcons();
       } catch (e) {
         console.error("fetchBroadcast failed:", e);
       }
     }
 
-    function dismissBroadcast() {
-      const banner = document.getElementById('broadcastBanner');
-      if (banner) banner.classList.add('hidden');
+    function dismissRedAlertPopup() {
+      const popup = document.getElementById('redAlertPopup');
+      if (popup) popup.classList.add('hidden');
+      const popTitle = document.getElementById('redAlertPopupTitle')?.innerText || '';
+      const popMsg = document.getElementById('redAlertPopupMsg')?.innerText || '';
+      _dismissedRedAlertKey = `${popTitle}|${popMsg}`;
     }
 
     async function submitAdminBroadcast() {
@@ -3645,7 +3654,8 @@
           body: JSON.stringify({ active, title, message, severity })
         });
         if (res && res.ok) {
-          alert("✅ Broadcast announcement updated across all district portals.");
+          _dismissedRedAlertKey = null; // Un-dismiss so pop-up triggers on screen immediately
+          alert("✅ Broadcast alert directive published. Red notification pop-up activated.");
           fetchBroadcast();
         }
       } catch (e) {
@@ -4870,20 +4880,20 @@
         const no2 = document.getElementById('pubNo2');
         const pm25 = document.getElementById('pubPm25');
         const pm10 = document.getElementById('pubPm10');
-        const alertTime = document.getElementById('citizenAlertLiveTime');
+        const liveTimeEl = document.getElementById('citizenLiveSoundingTime');
 
         if (aqiVal) aqiVal.innerText = data.aqi;
         if (aqiCat) {
-          aqiCat.innerText = data.category;
-          aqiCat.style.color = data.category_color || '#ef4444';
+          aqiCat.innerText = data.category || 'Monitored';
+          aqiCat.style.color = data.category_color || '#34d399';
         }
-        if (so2) so2.innerText = data.pollutant_levels.so2_ugm3 + ' µg';
-        if (no2) no2.innerText = data.pollutant_levels.no2_ugm3 + ' µg';
-        if (pm25) pm25.innerText = data.pollutant_levels.pm25_ugm3 + ' µg';
-        if (pm10) pm10.innerText = data.pollutant_levels.pm10_ugm3 + ' µg';
+        if (so2) so2.innerText = (data.pollutant_levels ? data.pollutant_levels.so2_ugm3 : 0) + ' µg';
+        if (no2) no2.innerText = (data.pollutant_levels ? data.pollutant_levels.no2_ugm3 : 0) + ' µg';
+        if (pm25) pm25.innerText = (data.pollutant_levels ? data.pollutant_levels.pm25_ugm3 : 0) + ' µg';
+        if (pm10) pm10.innerText = (data.pollutant_levels ? data.pollutant_levels.pm10_ugm3 : 0) + ' µg';
 
-        if (alertTime) {
-          alertTime.innerText = 'Active Alert Directive • ' + new Date().toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST';
+        if (liveTimeEl) {
+          liveTimeEl.innerText = 'Live Sounding • ' + new Date().toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST';
         }
       } catch (e) {
         console.error("fetchPublicAirQuality failed:", e);
